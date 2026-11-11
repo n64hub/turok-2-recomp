@@ -357,8 +357,8 @@ static std::string game_thread_name(const OSThread* t) {
 }
 
 // --input <file> (development): scripted port 1 input for unattended runs. Each line is "<seconds> <buttons hex> [x y]",
-// seconds counted from the game's first input read, and the last line whose time has passed is held. Lines starting
-// with # are comments.
+// seconds counted from the game's first input read, and the last line whose time has passed is held; while that line
+// presses nothing, the keyboard and controllers play as usual. Lines starting with # are comments.
 struct ScriptedInput {
     double at;
     uint32_t buttons;
@@ -400,13 +400,17 @@ static bool get_n64_input(int player_index, uint16_t* buttons_out, float* x_out,
     if (!input_script.empty() && player_index == 0) {
         static const auto start = std::chrono::steady_clock::now();
         double now = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
+        const ScriptedInput* held = nullptr;
         for (const ScriptedInput& in : input_script) {
             if (in.at <= now) {
-                *buttons_out = (uint16_t)in.buttons;
-                *x_out = in.x;
-                *y_out = in.y;
-                ret = true;
+                held = &in;
             }
+        }
+        if (held != nullptr && (held->buttons != 0 || held->x != 0.0f || held->y != 0.0f)) {
+            *buttons_out = (uint16_t)held->buttons;
+            *x_out = held->x;
+            *y_out = held->y;
+            ret = true;
         }
     }
     return ret;

@@ -134,8 +134,8 @@ before_vram = 0x0028D6D4
 text = "    { void turok_set_clock_rate(uint8_t*, uint32_t); turok_set_clock_rate(rdram, 0x80122990); }"
 
 # Widescreen (lib/turok-engine/src/widescreen.cpp). The game's frame (func_00287248) starts its display list in the
-# buffer it swaps to just before 0x002872BC and is done with it at its return; its HUD (health and the counters by it)
-# is func_0022077C's.
+# buffer it swaps to just before 0x002872BC and is done with it at its return; its HUD (the health counter and what
+# goes with it, as rectangles) is func_0027C1E8's.
 [[patches.hook]]
 func = "func_00287248"
 before_vram = 0x002872BC
@@ -147,11 +147,18 @@ before_vram = 0x00287AB4
 text = "    { void turok_frame_end(uint8_t*); turok_frame_end(rdram); }"
 
 [[patches.hook]]
-func = "func_0022077C"
-before_vram = 0x0022077C
+func = "func_0027C1E8"
+before_vram = 0x0027C1E8
 text = "    { void turok_hud_begin(uint8_t*); turok_hud_begin(rdram); }"
 
 [[patches.hook]]
-func = "func_0022077C"
-before_vram = 0x00220A14
+func = "func_0027C1E8"
+before_vram = 0x0027C4DC
 text = "    { void turok_hud_end(uint8_t*); turok_hud_end(rdram); }"
+
+# The camera (func_0027D160) has made its float view-projection matrix (+0x1CC of its struct, s4) and the display
+# list's copy of it: widened from here for the culling, which reads the float one.
+[[patches.hook]]
+func = "func_0027D160"
+before_vram = 0x0027DA54
+text = "    { void turok_widen_culling(uint8_t*, uint32_t); turok_widen_culling(rdram, (uint32_t)ctx->r20 + 0x1CC); }"
