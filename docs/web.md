@@ -42,6 +42,13 @@ headers threads need) and open `Turok2Recompiled.html` in Chrome or Firefox with
 
 ## How it plays
 
-It boots in Chrome through the legal screen, the logos and the title into the menus, and New Game's opening scenes,
-with no WebGPU errors. There is no prebuilt shader list yet, so RT64 builds each shader the first time it is drawn and
-the page presents a few frames a second until it has them.
+Its prebuilt shader list, `src/rt64_shaders.txt`, is 57 shaders: section 0's 54 are the boot, the menus, a new
+game's two opening cinematics, the pause menu and the map, built behind the launcher before Start Game; the Port of
+Adia's 3 are built after. `tools/shader_plan.json` records it with N64Recomp-browser's `tools/record_shaders.mjs`,
+without anyone playing: `tools/survey.js` reads the game's mode word, its player and whether a cinematic plays, so the
+plan presses Start through the legal screen, the logos, the title and the menus into a new game, waits out the two
+opening cinematics (about 2 minutes 10 s, which Start doesn't skip) until the player has control, and walks, turns,
+jumps and fires in the Port of Adia. Record it again after a change that draws something new.
+
+`tools/play_plan.json` is the page's regular play, the same way into the level and then about 75 s of play with the
+pause menu and the map opened on the way; N64Recomp-browser's `tools/play_page.mjs` runs it, in Chrome and Firefox.
