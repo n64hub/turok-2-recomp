@@ -1,0 +1,18 @@
+The first release of Turok 2: Recompiled for Windows and Linux: a native PC port of the N64 game made by static recompilation. It is not an emulator and contains no game data: you need your own ROM of the USA release, revision 1.0 (a big-endian `.z64` of 32 MiB, SHA-1 `fb0400f21e3f043939ab56500c7b12a3231006f1`). Other regions and revisions are not supported.
+
+> **Made with AI.** Almost all of the code was written by AI agents (Claude), directed and play-tested by a person.
+
+**Windows:** unzip `Turok2Recompiled-<version>-windows-x64.zip` and run `Turok2Recompiled.exe` from that folder (it needs a recent Visual C++ 2015-2022 redistributable, x64). **Linux (x86-64):** extract `Turok2Recompiled-<version>-linux-x64.tar.gz` and run `Turok2Recompiled` in that folder (glibc 2.35 or newer, a Vulkan driver, GTK 3 and FreeType; it brings its own SDL2). Pick your ROM with **Load ROM**, then **Start Game**: the ROM is stored, so the next start goes straight to the game.
+
+**What works:** the legal screen, the logos, the title and the menus; a new game's opening scenes into the first level, the Port of Adia, walked and looked round in; the pause menu and the map. Sound (the game's own audio code, recompiled), the game's Controller Pak saves kept across restarts, and keyboard, mouse and gamepad input.
+
+**Enhancements**, each an option on the settings menu with an Original value that plays as the console does:
+
+- High resolution at the window's size, with anti-aliasing
+- Smooth motion at the display's refresh rate, drawn between the game's own frames
+- Widescreen: in a window wider than 4:3 the level reaches the window's edges and the HUD sits at its sides
+- A shooter's controls: WASD and the mouse, or the two sticks and the triggers, all rebindable
+
+**Not checked yet:** the levels after the first and a whole playthrough (expect the odd thing drawn wrong or a spot that hangs; reports are welcome on the [issues page](https://github.com/n64hub/turok-2-recomp/issues)), long play sessions, and the Linux build on a GPU (it has been booted on Mesa's software Vulkan only). The map still shows a thin line at each of the old 4:3 edges in widescreen.
+
+The same game plays in a browser at [n64hub.com/turok-2](https://n64hub.com/turok-2/). The [README](https://github.com/n64hub/turok-2-recomp#readme) has how to build it yourself.

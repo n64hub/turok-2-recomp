@@ -17,8 +17,29 @@ git or CI is made from one except the symbol names, addresses and sizes in `syms
 (`syms/layout.toml`).
 
 **Status:** the whole game is recompiled, and the desktop build plays from boot through the menus and the opening
-scenes into the first level, the Port of Adia. The web page builds and boots into the opening scenes (`docs/web.md`).
-The frame rate, widescreen, the controls' setup, the page's shader list and releases are still to come.
+scenes into the first level, the Port of Adia, walked and looked round in. The web page builds and
+boots into the opening scenes (`docs/web.md`). The page's shader list and releases are still to come.
+
+## Playing
+
+- **Widescreen:** in a window wider than 4:3 the level reaches the window's edges, its HUD (the health counter and
+  what goes with it) sits at the window's sides, and the border the game draws round its 4:3 screen is left out
+  (lib/turok-engine's `docs/widescreen.md`). The game culls what's outside its view; that view is widened to 21:9, so
+  in a window wider than that the outer edges may show things appearing late. The map (Tab) still shows a thin line
+  at each of the old 4:3 edges.
+- **Smooth motion:** the game runs at its own rate and RT64 draws the frames in between at the display's (the Graphics
+  tab's Framerate; Original shows the game's own).
+- **Controls**, all rebindable on the Controls tab:
+
+  | | Keyboard and mouse | Controller |
+  |---|---|---|
+  | Move and strafe | W A S D | left stick |
+  | Look | mouse, or the arrow keys | right stick |
+  | Fire | left mouse button, or Left Ctrl | right trigger |
+  | Jump | Space | bottom face button, or the left trigger |
+  | Change weapon | Q and E | the shoulder buttons |
+  | Map | Tab | top face button |
+  | Pause | Enter | Start |
 
 ## The ROM
 
