@@ -198,6 +198,7 @@ target_sources(Turok2Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/turok-engine/src/libultra.cpp
     ${CMAKE_SOURCE_DIR}/lib/turok-engine/src/pi_dma.cpp
     ${CMAKE_SOURCE_DIR}/lib/turok-engine/src/tlb_views.cpp
+    ${CMAKE_SOURCE_DIR}/lib/turok-engine/src/widescreen.cpp
 )
 if (T2_PATCHES)
     target_sources(Turok2Recompiled PRIVATE ${CMAKE_SOURCE_DIR}/src/main/register_patches.cpp)

@@ -25,6 +25,9 @@ there, then move this repo's submodule onto the commit.
   apply to the other three. `runtime-patches/` are this game's own over them.
 - `tools/build_web.sh` and `tools/docker/Dockerfile.web`: the web page (`docs/web.md`), built with Emscripten in
   N64Recomp-browser's image. `RECOMP_KUSEG_WINDOW` (CMakeLists.txt) gives the TLB-mapped code its memory on the web.
+- `tools/release.sh` and `tools/docker/Dockerfile.linux`: the desktop releases for Windows and Linux (the script's header
+  says how). Each change a player would notice adds a line to `releases/next.md`; a release moves it to
+  `releases/v<version>.md`.
 - `icons/`: drawn by `tools/icon.ps1` from plain text and shapes.
 - Comments beside the code, for how and why: each file's header. Read the header of the file you change and update
   it in the same commit.
@@ -46,6 +49,12 @@ there, then move this repo's submodule onto the commit.
   osAiGetStatus (`turok_ai_get_status`).
 - It wants a Controller Pak in port 1 and asks osMotorInit about a Rumble Pak in each port (`turok_motor_init`):
   without the first it stops on "Controller Pak not found".
+- Widescreen (lib/turok-engine's `docs/widescreen.md`) hooks four places, each with a comment in `us.toml`: the frame
+  (func_00287248) starts its display list, whose head is the pointer at 0x800D8E24, and ends it; the HUD's rectangles
+  are func_0027C1E8's; the camera (func_0027D160) makes its perspective with guPerspectiveF and keeps its
+  view-projection matrix as floats at +0x1CC of its struct, which the culling reads.
+- The keyboard and mouse: `src/main/main.cpp` turns the mouse into the control stick (looking) and its left button
+  into Z; `--input <file>` plays a scripted controller for tests (its comment says the format).
 - The finder's mistakes show up as a stack that doesn't balance: a function split in two leaves $sp short after the
   call, and a crash far from it. A start found only by a jal in a data fragment split one function at its epilogue
   (gen_syms now drops those). Check a new syms file for functions whose `addiu $sp` don't balance.
