@@ -17,8 +17,8 @@ git or CI is made from one except the symbol names, addresses and sizes in `syms
 (`syms/layout.toml`).
 
 **Status:** the whole game is recompiled, and the desktop build plays from boot through the menus and the opening
-scenes into the first level, the Port of Adia. The frame rate, widescreen, the controls' setup, a web page and
-releases are still to come.
+scenes into the first level, the Port of Adia. The web page builds and boots into the opening scenes (`docs/web.md`).
+The frame rate, widescreen, the controls' setup, the page's shader list and releases are still to come.
 
 ## The ROM
 
