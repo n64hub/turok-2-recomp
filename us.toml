@@ -104,6 +104,21 @@ func = "func_00286674"
 before_vram = 0x00286698
 text = "    { void osViSetMode(uint8_t*, int32_t); osViSetMode(rdram, (int32_t)0x800B7AF0); }"
 
+# The VI modes the game builds for its hi-res screens (480x360 and the others, func_00424008) put field 0's origin at the
+# framebuffer itself, where libultra's modes put it one row in. RT64 finds the framebuffer a VI shows by taking a row off
+# the origin, so it found none of the game's: it showed the image read back from RDRAM, at 1x and one row off, never its
+# own render, and the widescreen and resolution it renders at never reached the screen. Before each of the game's
+# osViSetMode calls, a field 0 origin of 0 becomes one row (the width times the pixel size).
+[[patches.hook]]
+func = "func_00424008"
+before_vram = 0x004242BC
+text = "    if (MEM_W(0x28, ctx->r4) == 0) { MEM_W(0x28, ctx->r4) = MEM_W(0x8, ctx->r4) * (((MEM_W(0x4, ctx->r4) & 3) == 3) ? 4 : 2); }"
+
+[[patches.hook]]
+func = "func_00289D94"
+before_vram = 0x00289DD0
+text = "    if (MEM_W(0x28, ctx->r4) == 0) { MEM_W(0x28, ctx->r4) = MEM_W(0x8, ctx->r4) * (((MEM_W(0x4, ctx->r4) & 3) == 3) ? 4 : 2); }"
+
 # t2_boot_main reloads the first MB straight from the cartridge bus (lw from 0xB0001000) unless it finds a soft reset.
 # The runtime has already loaded that MB, so it always takes the soft reset's branch: bnez $v0 -> b.
 [[patches.instruction]]
@@ -117,3 +132,26 @@ value = 0x10000054
 func = "t2_boot_main"
 before_vram = 0x0028D6D4
 text = "    { void turok_set_clock_rate(uint8_t*, uint32_t); turok_set_clock_rate(rdram, 0x80122990); }"
+
+# Widescreen (lib/turok-engine/src/widescreen.cpp). The game's frame (func_00287248) starts its display list in the
+# buffer it swaps to just before 0x002872BC and is done with it at its return; its HUD (health and the counters by it)
+# is func_0022077C's.
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x002872BC
+text = "    { void turok_frame_begin(uint8_t*); turok_frame_begin(rdram); }"
+
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x00287AB4
+text = "    { void turok_frame_end(uint8_t*); turok_frame_end(rdram); }"
+
+[[patches.hook]]
+func = "func_0022077C"
+before_vram = 0x0022077C
+text = "    { void turok_hud_begin(uint8_t*); turok_hud_begin(rdram); }"
+
+[[patches.hook]]
+func = "func_0022077C"
+before_vram = 0x00220A14
+text = "    { void turok_hud_end(uint8_t*); turok_hud_end(rdram); }"
