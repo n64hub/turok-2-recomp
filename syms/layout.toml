@@ -1,0 +1,34 @@
+# Where Turok 2: Seeds of Evil (USA 1.0)'s code is, for lib/turok-engine/tools/gen_syms.py, which writes
+# syms/turok2.us.syms.toml from the ROM with it (lib/turok-engine/docs/rom_layout.md has the layout).
+rom = "roms/turok2.us.z64"
+sha1 = "fb0400f21e3f043939ab56500c7b12a3231006f1"
+out = "syms/turok2.us.syms.toml"
+names = "syms/names.toml"
+
+# The first MB after the header: the IPL3 copies it to 0x80000400 and the entry point maps it at 0x00200400 with TLB
+# entry 31. Its text, then rodata and data, which the code reads through kseg0 (0x800A51E0-0x800C4000). The ROM after
+# 0xC4C00 in that MB is an older copy of the text's tail, cleared as bss at boot.
+[[segment]]
+name = "main"
+rom = 0x1000
+vram = 0x00200400
+text_end = 0xA5DE0
+data_end = 0xC4C00
+library = true
+
+# The second block, which t2_VmInit maps with TLB entry 0 at 0x00400000: its text, then rodata and data read through
+# 0x0043xxxx. It sits inside an older build of the whole program, so its ends are exact.
+[[segment]]
+name = "ovl"
+rom = 0x14A000
+vram = 0x00400000
+text_end = 0x17A7A8
+data_end = 0x186AE0
+library = true
+
+# The first MB as the data sees it, through kseg0: every jump table, the second block's too, is in main's rodata.
+[[alias]]
+name = "main_kseg0"
+rom = 0x1000
+vram = 0x80000400
+size = 0xC3C00
