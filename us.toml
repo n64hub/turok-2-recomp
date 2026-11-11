@@ -102,7 +102,7 @@ text = "    { void turok_set_pi_event(uint8_t*, uint64_t, uint32_t); turok_set_p
 [[patches.hook]]
 func = "func_00286674"
 before_vram = 0x00286698
-text = "    osViSetMode(rdram, (int32_t)0x800B7AF0);"
+text = "    { void osViSetMode(uint8_t*, int32_t); osViSetMode(rdram, (int32_t)0x800B7AF0); }"
 
 # t2_boot_main reloads the first MB straight from the cartridge bus (lw from 0xB0001000) unless it finds a soft reset.
 # The runtime has already loaded that MB, so it always takes the soft reset's branch: bnez $v0 -> b.
