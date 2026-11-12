@@ -104,21 +104,6 @@ func = "func_00286674"
 before_vram = 0x00286698
 text = "    { void osViSetMode(uint8_t*, int32_t); osViSetMode(rdram, (int32_t)0x800B7AF0); }"
 
-# The VI modes the game builds for its hi-res screens (480x360 and the others, func_00424008) put field 0's origin at the
-# framebuffer itself, where libultra's modes put it one row in. RT64 finds the framebuffer a VI shows by taking a row off
-# the origin, so it found none of the game's: it showed the image read back from RDRAM, at 1x and one row off, never its
-# own render, and the widescreen and resolution it renders at never reached the screen. Before each of the game's
-# osViSetMode calls, a field 0 origin of 0 becomes one row (the width times the pixel size).
-[[patches.hook]]
-func = "func_00424008"
-before_vram = 0x004242BC
-text = "    if (MEM_W(0x28, ctx->r4) == 0) { MEM_W(0x28, ctx->r4) = MEM_W(0x8, ctx->r4) * (((MEM_W(0x4, ctx->r4) & 3) == 3) ? 4 : 2); }"
-
-[[patches.hook]]
-func = "func_00289D94"
-before_vram = 0x00289DD0
-text = "    if (MEM_W(0x28, ctx->r4) == 0) { MEM_W(0x28, ctx->r4) = MEM_W(0x8, ctx->r4) * (((MEM_W(0x4, ctx->r4) & 3) == 3) ? 4 : 2); }"
-
 # t2_boot_main reloads the first MB straight from the cartridge bus (lw from 0xB0001000) unless it finds a soft reset.
 # The runtime has already loaded that MB, so it always takes the soft reset's branch: bnez $v0 -> b.
 [[patches.instruction]]
