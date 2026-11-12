@@ -15,7 +15,11 @@
   "fired in for half a minute, and the plan's last section, pause, which goes into section 0: the pause menu and the",
   "map, which come up in any level. Each section is a load of its own, the opening included. Not recorded: the levels",
   "after the first. Flags follow settings (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means",
-  "recording again."
+  "recording again.",
+  "",
+  "Added by hand: 00507048 00082cff (adia), which the plan's half minute in the Port of Adia doesn't reach and a",
+  "longer play there at 21:9 (1680x720) did, about a minute into the level. Recording again drops it unless the plan",
+  "reaches it: add it back."
  ],
  "load": [
   [
