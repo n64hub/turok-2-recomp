@@ -147,3 +147,11 @@ text = "    { void turok_hud_end(uint8_t*); turok_hud_end(rdram); }"
 func = "func_0027D160"
 before_vram = 0x0027DA54
 text = "    { void turok_widen_culling(uint8_t*, uint32_t); turok_widen_culling(rdram, (uint32_t)ctx->r20 + 0x1CC); }"
+
+# The camera's view pyramid (5 points from sp+0x3F8: the eye, then the far corners from the field of view), made in its
+# own space and about to be moved into the world (func_0020F908), its side planes and bounding box taken from it for the
+# level's culling: widened from here, as the matrix is.
+[[patches.hook]]
+func = "func_0027D160"
+before_vram = 0x0027DCF4
+text = "    { void turok_widen_frustum(uint8_t*, uint32_t, uint32_t); turok_widen_frustum(rdram, (uint32_t)ctx->r29 + 0x3F8, 5); }"
