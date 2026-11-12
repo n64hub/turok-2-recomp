@@ -2818,7 +2818,7 @@ functions = [
     { name = "func_0041A44C", vram = 0x0041A44C, size = 0x48 },
     { name = "func_0041A494", vram = 0x0041A494, size = 0x38 },
     { name = "func_0041A4CC", vram = 0x0041A4CC, size = 0x8 },
-    { name = "func_0041A4D4", vram = 0x0041A4D4, size = 0x108 },
+    { name = "func_0041A4D0", vram = 0x0041A4D0, size = 0x10C },
     { name = "func_0041A5DC", vram = 0x0041A5DC, size = 0x314 },
     { name = "func_0041A8F0", vram = 0x0041A8F0, size = 0x14 },
     { name = "func_0041A904", vram = 0x0041A904, size = 0x19C },
