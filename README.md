@@ -25,8 +25,7 @@ boots into the opening scenes (`docs/web.md`). The page's shader list and releas
 - **Widescreen:** in a window wider than 4:3 the level reaches the window's edges, its HUD (the health counter and
   what goes with it) sits at the window's sides, and the border the game draws round its 4:3 screen is left out
   (lib/turok-engine's `docs/widescreen.md`). The game culls what's outside its view; that view is widened to 21:9, so
-  in a window wider than that the outer edges may show things appearing late. The map (Tab) still shows a thin line
-  at each of the old 4:3 edges.
+  in a window wider than that the outer edges may show things appearing late.
 - **Smooth motion:** the game runs at its own rate and RT64 draws the frames in between at the display's (the Graphics
   tab's Framerate; Original shows the game's own).
 - **Controls**, all rebindable on the Controls tab:
