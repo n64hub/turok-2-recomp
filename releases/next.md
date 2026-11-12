@@ -1,0 +1,1 @@
+- Mouse look is on from the first start (General, Mouse Sensitivity, 50%; 0 turns it off and leaves the cursor free). If you played v0.1.0 or v0.1.1, your saved settings have it at 0, so turn it up there
