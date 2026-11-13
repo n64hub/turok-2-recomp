@@ -57,11 +57,12 @@ there, then move this repo's submodule onto the commit.
   (func_00287248) starts its display list, whose head is the pointer at 0x800D8E24, and ends it; the HUD's rectangles
   are func_0027C1E8's; the camera (func_0027D160) makes its perspective with guPerspectiveF and keeps its
   view-projection matrix as floats at +0x1CC of its struct, which the culling reads.
-- The keyboard and mouse: `src/main/main.cpp` turns the mouse into the control stick (looking) and its left button
-  into Z; `--input <file>` plays a scripted controller for tests (its comment says the format). The game looks down
-  with the stick pushed up, as a plane's stick (seen on the page: the up arrow held looked at the ground), so
-  `src/game/config.cpp`'s up arrow and right stick and the mouse moved up push the stick down: up looks up. The menus read the stick too, as direction bits, which us.toml swaps
-  back so that up moves their cursor up.
+- The keyboard and mouse: `src/main/main.cpp` hands the mouse's movement to the engine's mouse look, which us.toml's
+  hook in the player's look (func_0024EF70) adds to the yaw and pitch, and makes its left button Z; `--input <file>`
+  plays a scripted controller for tests (its comment says the format). The game looks down with the stick pushed up,
+  as a plane's stick (seen on the page: the up arrow held looked at the ground), so `src/game/config.cpp`'s up arrow
+  and right stick push the stick down: up looks up. The menus read the stick too, as direction bits, which us.toml
+  swaps back so that up moves their cursor up.
 - The finder's mistakes show up as a stack that doesn't balance: a function split in two leaves $sp short after the
   call, and a crash far from it. A start found only by a jal in a data fragment split one function at its epilogue
   (gen_syms now drops those). Check a new syms file for functions whose `addiu $sp` don't balance.
