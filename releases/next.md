@@ -1,0 +1,1 @@
+- Multiplayer no longer closes the game when Frag Tag's setup starts a game or when Save is chosen on the frag count after a match: the program didn't know where either of those two menu items' code starts.
