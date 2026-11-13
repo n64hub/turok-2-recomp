@@ -1,1 +1,0 @@
-- The game no longer closes, with no message, when it calls one of three pieces of its code that the program had placed a few bytes wrong: Frag Tag's Start Game, Save on the frag count after a multiplayer match, and a callback one kind of object sets up.
