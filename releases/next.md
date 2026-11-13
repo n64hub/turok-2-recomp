@@ -1,1 +1,1 @@
-- Multiplayer no longer closes the game when Frag Tag's setup starts a game or when Save is chosen on the frag count after a match: the program didn't know where either of those two menu items' code starts.
+- The game no longer closes, with no message, when it calls one of three pieces of its code that the program had placed a few bytes wrong: Frag Tag's Start Game, Save on the frag count after a multiplayer match, and a callback one kind of object sets up.
