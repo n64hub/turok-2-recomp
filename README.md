@@ -16,9 +16,10 @@ The repo holds no ROM, no asset from the game and no data extracted from it: you
 git or CI is made from one except the symbol names, addresses and sizes in `syms/` and where the code is in the ROM
 (`syms/layout.toml`).
 
-**Status:** the whole game is recompiled, and the desktop build plays from boot through the menus and the opening
-scenes into the first level, the Port of Adia, walked and looked round in. The web page builds and
-boots into the opening scenes (`docs/web.md`). The page's shader list and releases are still to come.
+**Status:** released for Windows and Linux (`releases/`). The desktop build plays from boot through the menus and the
+opening scenes into the first level, the Port of Adia, with sound, and keyboard, mouse and gamepad input, and up to
+four players each on a pad of their own. The game hasn't been played past the Port of Adia yet. The same game plays in
+a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (`docs/web.md`).
 
 ## Playing
 
@@ -39,6 +40,9 @@ boots into the opening scenes (`docs/web.md`). The page's shader list and releas
   | Change weapon | Q and E | the shoulder buttons |
   | Map | Tab | top face button |
   | Pause | Enter | Start |
+
+  The mouse turns and looks as the right stick does, on from the first start (General, Mouse Sensitivity, 50%; 0
+  turns it off and leaves the cursor free).
 
 ## The ROM
 
@@ -68,6 +72,12 @@ Start Game.
 
 `syms/` is written from the ROM by `python3 lib/turok-engine/tools/gen_syms.py` (it needs `pip install spimdisasm`);
 run it again only when the engine's finder or `syms/names.toml` changes.
+
+## Releases
+
+Each release is built where the ROM is, by `tools/release.sh` (its header says how), from the merge commit of a pull
+request titled "Release v<version>" that bumps `version_string` in `src/main/main.cpp` and moves `releases/next.md`,
+where each change adds what the player gets, to `releases/v<version>.md`, the release's notes.
 
 ## License
 

@@ -16,7 +16,9 @@
 #
 # Added by hand: 00507048 00082cff (adia), which the plan's half minute in the Port of Adia doesn't reach and a
 # longer play there at 21:9 (1680x720) did, about a minute into the level. Recording again drops it unless the plan
-# reaches it: add it back.
+# reaches it: add it back. And c8113078 0018ac1f fc1217ff fffffe38 0aaaaa0e (section 0), which every play of
+# tools/play_plan.json on a fresh profile has missed 105-138 s into the page, in Chrome and Firefox, and the recording
+# doesn't reach (N64Recomp-browser's plays.jsonl, t2 from 2026-11-12 17:26 UTC on): add it back too.
 00504240 00102cff fc511bff 3ffdfe38 084e142b
 00504340 00002cff fcffffff fffdf6fb 0800000b
 0c184240 00102c1f fc12abff fffffe38 0ccf540b
@@ -71,6 +73,7 @@ c8112438 0018ec1f fc327fff fffff638 0800000a
 00504340 0008ac1f fcffffff fffdf6fb 0800000b
 c8112438 0018ac1f fc327fff fffff638 0800000e
 00504240 00082c1f fcffffff fffdf6fb 0800000b
+c8113078 0018ac1f fc1217ff fffffe38 0aaaaa0e
 section adia
 00507048 00082cff fcffffff fffe793c 08000008
 c8112438 0018ac1f fc327fff fffff638 0800000a
