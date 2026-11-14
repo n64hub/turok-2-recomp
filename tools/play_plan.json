@@ -1,5 +1,6 @@
 {
  "page": "Turok2Recompiled.html",
+ "padKeys": { "ControlLeft": 7, "Tab": 3, "KeyE": 5, "KeyQ": 4 },
  "header": [
   "The page's plan for N64Recomp-browser's tools/play_page.mjs, its regular play of about 5 minutes: the launcher, Load",
   "ROM on a new profile once the shader list Chrome builds behind it is done (Firefox builds none there and says so),",
@@ -7,7 +8,9 @@
   "game, whose two opening cinematics (about 2 minutes 10 s, which Start doesn't skip) it waits out until the player has",
   "control in the first level, the Port of Adia (tools/survey.js; a need fails the run otherwise). There the plan walks,",
   "turns, jumps and fires for about 75 s, opening and closing the pause menu (Enter) and the map (Tab) on the way. Its",
-  "waits and holds are the browser's time: the game has no clock the plan reads."
+  "waits and holds are the browser's time: the game has no clock the plan reads.",
+  "With --pad its padKeys are the pad buttons this game gives its keys (src/game/config.cpp): Left Ctrl is Z, the right",
+  "trigger; Tab is L, North; E is A, the right shoulder; Q is B, the left."
  ],
  "load": [
   [
