@@ -1,0 +1,1 @@
+- With the map open (Tab) and Frame Interpolation on, the map no longer drops out of a few of the frames while you move: the renderer could show a frame between drawing the level and drawing the map.
