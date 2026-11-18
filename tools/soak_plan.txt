@@ -1,8 +1,10 @@
-# Turok 2's soak plan: one round through the game's scenes on its Linux build, which fails on a crash, the program
-# exiting or the picture standing still for 10 s: N64Recomp-browser's tools/frame_dump.mjs --soak 205 (its
-# tools/remote_frame_dump.sh on a Linux host with a GPU; their headers say how). Its steps are
-# tools/capture_window.ps1's, at seconds since the program started, plus frame_dump's `random`; the keys are
-# src/game/config.cpp's (Enter Start, E A, Q B, Tab L, W A S D the C buttons, the arrows the stick, Space R).
+# Turok 2's soak plan: one round through the game's scenes for the desktop soak, a play of its Linux build by this plan
+# for 205 s that fails on a crash, the program exiting or the picture standing still for 10 s. Each line is a step at
+# seconds since the program started: key <name> [ms held], down and up <name>, shot <name>, peek <addr>, until <addr>
+# <mask> <value> <timeout s> [key [ms]] (waits until the game's 32-bit word at addr, anded with mask, is value, pressing
+# key every 1.5 s meanwhile; the later steps move on by the wait, and a wait unmet fails the play), and random <key>,...
+# (one of them every 0.3-1.2 s) until random off. The keys are src/game/config.cpp's (Enter Start, E A, Q B, Tab L, W A
+# S D the C buttons, the arrows the stick, Space R).
 #
 # A round: the boot, Start (Enter) through the title into the main menu (mode 8), Single and New Game, past the
 # Controller Pak note and the Important screen, into the first cinematic (mode 11, Adon and the Eye of Truth), and the
