@@ -1,0 +1,22 @@
+# The save run of the save check (README.md, with tools/load_plan.txt): Start through the title, SINGLE and NEW GAME
+# into the Port of Adia (state word 0x8011AC88 = 0xB as the level loads, 0xD once it plays, the player at 0x80119890):
+# Start takes its opening cinematic on to the level's cutscene (0xC), and A skips that.
+# A save portal's menu is then opened where the player stands, as walking onto one would: the request at 0x801198A4
+# set and 0x801198A8 cleared, which the level's code polls, and the flag at [0x800C1BB0]+0x3C that tells it the
+# portal's cutscene is over. The game's own menu then saves with A (Save) and A (the first free note), which writes
+# saves/controllerpak_1.mpk. Before it, the play time's minutes (the float at 0x8011ACB8) are set to 44, which a new
+# game never has after a few seconds: the note holds them, and the load run checks they come back from it.
+0 until 0x8011AC88 0xFFFFFFFF 0xB 120 Enter
+1 until 0x8011AC88 0xFFFFFFFF 0xC 240 Enter
+1.5 until 0x8011AC88 0xFFFFFFFF 0xD 240 E
+2 until 0x80119890 0x80000000 0x80000000 60
+14 poke 0x8011ACB8 0x42300000
+14 poke 0x801198A8 0
+14 poke 0x801198A4 1
+14 poke [0x800C1BB0]+0x3C 1
+15.5 shot portal
+16 key E 100
+18 key E 100
+18.5 saves changed 15
+20 shot saved
+21 end
