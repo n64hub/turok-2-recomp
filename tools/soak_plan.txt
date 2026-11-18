@@ -1,0 +1,44 @@
+# Turok 2's soak plan: one round through the game's scenes on its Linux build, which fails on a crash, the program
+# exiting or the picture standing still for 10 s: N64Recomp-browser's tools/frame_dump.mjs --soak 190 (its
+# tools/remote_frame_dump.sh on a Linux host with a GPU; their headers say how). Its steps are
+# tools/capture_window.ps1's, at seconds since the program started, plus frame_dump's `random`; the keys are
+# src/game/config.cpp's (Enter Start, E A, Q B, Tab L, W A S D the C buttons, the arrows the stick, Space R).
+#
+# A round: the boot, Start (Enter) through the title into the main menu (mode 8), Single and New Game, past the
+# Controller Pak note and the Important screen, into the first cinematic (mode 11, Adon and the Eye of Truth), and the
+# Port of Adia's opening cinematic (12), which loads the first level. Start skips neither: the two take about 2 minutes
+# 15 s, most of the round. Then, with the player in control (13), 12 s of random moves, turns, jumps and weapon changes,
+# the map (Tab) open and closed, the pause menu (Enter) with Mission Status and Inventory opened and closed (Q is
+# back), and random input to the end. The word at 0x8011AC88 is the game's mode (tools/survey.js says what each is);
+# each `until` waits on it, so the round keeps step with a slow boot. Port of Adia's first level change is minutes of
+# play away, past the round: the level the cinematics load is this round's one.
+10 until 0x8011AC88 0xFFFFFFFF 8 60 Enter
+11 shot menu
+12 until 0x8011AC88 0xFFFFFFFF 11 30 Enter
+13 shot adon
+40 shot adon-2
+41 until 0x8011AC88 0xFFFFFFFF 12 150
+42 shot adia-cinematic
+60 shot adia-cinematic-2
+61 until 0x8011AC88 0xFFFFFFFF 13 150
+62 shot adia
+63 random W,A,S,D,Left,Right,Up,Down,Space,E,Q
+75 random off
+76 key Tab
+78 shot map
+79 key Tab
+80 key Enter
+82 shot pause
+83 key Down
+84 key Enter
+86 shot mission-status
+87 key Q
+89 key Down
+90 key Down
+91 key Enter
+93 shot inventory
+94 key Q
+96 shot inventory-back
+97 key Q
+99 shot resumed
+100 random W,A,S,D,Left,Right,Up,Down,Space,E,Q
