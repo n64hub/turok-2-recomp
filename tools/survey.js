@@ -15,6 +15,11 @@
 // A run that never gets control says why in its log: the modes the game went through and when, and every place in the
 // page's memory that holds RDRAM's boot globals (what n64r finds RDRAM by) with the mode read there, so a run that read
 // the wrong copy is told from a game that stayed where it was.
+//
+// A plan presses Start only once the boot is past its first stage, mode 0 (booted): a Start held as the game finishes
+// that stage opens its Controller Pak menu, as on the console, and the menu stays in mode 0 and takes no Start to
+// leave (EXIT is the A button's). The plans pressed Enter for 150 ms every 2.5 s from the boot on, and about one boot in
+// thirty or fifty, wherever it played, one of them landed there: the run pressed on for four minutes at the menu.
 (() => {
   const f = (a) => { const b = new DataView(new ArrayBuffer(4)); b.setInt32(0, n64r(a)); return b.getFloat32(0); };
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -31,6 +36,14 @@
     },
     // A new game's opening has started (Start pressed through the menus).
     opening: () => t2.mode() === 11,
+    // Waits up to ms for the boot to leave its first stage (mode 0): true once it has. Start is safe to press from then on.
+    booted: async (ms = 120000) => {
+      for (const t0 = Date.now(); Date.now() - t0 < ms; await sleep(250)) {
+        if (t2.mode() !== 0) return true;
+      }
+      console.log(`[survey] still booting after ${ms} ms: ${t2.where()}`);
+      return false;
+    },
     // Waits up to ms, from a new game's opening, for the player to have control: true once it does.
     control: async (ms = 240000) => {
       for (const t0 = Date.now(); Date.now() - t0 < ms; await sleep(250)) {
