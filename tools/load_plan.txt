@@ -1,0 +1,33 @@
+# The load run of the save check (README.md), after tools/save_plan.txt, the program started again in the same
+# folder: at the title (state word 0x8011AC88 = 0x8), SINGLE, LOAD, the note (Up from CANCEL), YES and the Rumble Pak
+# screen's OK load the saved game. The play time's minutes (the float at 0x8011ACB8) are then 44 to 47 only if they
+# came off the pak: the save run set them to 44 before it saved. Nothing is written by then. Back in the Port of Adia
+# (A skips a cutscene if the level opens with one), the save portal's menu is opened as in the save run, the minutes
+# set to 60, and A (Save), A (the note), Up to YES and A save over the note through the check's links.
+0 until 0x8011AC88 0xFFFFFFFF 0x8 120 Enter
+2 key Enter 100
+3.5 key Down 100
+4.2 key Enter 100
+6.5 shot notes
+7 key Up 100
+7.6 key E 100
+9.5 shot note
+10 key E 100
+12 key E 100
+12.5 until 0x8011ACB8 0xFFF00000 0x42300000 60
+13 saves same
+13.5 until 0x8011AC88 0xFFFFFFFF 0xD 240 E
+14 until 0x80119890 0x80000000 0x80000000 60
+15 shot loaded
+26 poke 0x8011ACB8 0x42700000
+26 poke 0x801198A8 0
+26 poke 0x801198A4 1
+26 poke [0x800C1BB0]+0x3C 1
+27.5 key E 100
+29.5 key E 100
+31.5 shot overwrite
+32 key Up 100
+32.6 key E 100
+33 saves changed 15
+35 shot saved
+36 end
