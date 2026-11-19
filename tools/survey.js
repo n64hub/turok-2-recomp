@@ -6,11 +6,11 @@
 // The word at 0x8011AC88 is the game's mode, which its camera and HUD test: 0-3 through the boot, 4-5 the title's
 // attract demo, 7 the title, 8 and 13 the menus, 11 a new game's first cinematic (Adon and the Eye of Truth), 12 the
 // Port of Adia's opening cinematic, then 13 again with the player in control; 17 comes for a moment between some of
-// them. Start skips neither cinematic; the two take about 2 minutes 10 s together. Mode 0 lasts about 4 s on a desktop
-// and 15-25 s where the page is slow (a browser presenting through a virtual display). The game keeps its players in a
-// list at 0x80119890, a pointer to the first, 0 until one is loaded (the attract demo has one too). A cinematic plays
-// from the object at *0x800C1BB0: func_00284188, which the camera and the HUD ask, has one playing while its +0x38 is
-// set and its time (+0x1C, a float) is between its start (+0x30) and its end (+0x34).
+// them. The two cinematics take about 2 minutes 10 s together, and Start skips them (src/game/skips.cpp). Mode 0 lasts
+// about 4 s on a desktop and 15-25 s where the page is slow (a browser presenting through a virtual display). The game
+// keeps its players in a list at 0x80119890, a pointer to the first, 0 until one is loaded (the attract demo has one
+// too). A cinematic plays from the object at *0x800C1BB0: func_00284188, which the camera and the HUD ask, has one
+// playing while its +0x38 is set and its time (+0x1C, a float) is between its start (+0x30) and its end (+0x34).
 //
 // A run that never gets control says why in its log: the modes the game went through and when, and every place in the
 // page's memory that holds RDRAM's boot globals (what n64r finds RDRAM by) with the mode read there, so a run that read

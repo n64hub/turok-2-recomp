@@ -87,8 +87,10 @@ void t2::init_config() {
     general_options.has_rumble_strength = true;
     general_options.has_gyro_sensitivity = true;
     general_options.has_mouse_sensitivity = true;
+    recomp::config::Config& general = recompui::config::create_general_tab(general_options);
     // Stick Sensitivity (lib/turok-engine's docs/mouse_look.md): us.toml's hooks in the look code scale the stick by it.
-    turok::add_stick_sensitivity_option(recompui::config::create_general_tab(general_options));
+    turok::add_stick_sensitivity_option(general);
+    t2::add_skip_intro_option(general);
     recompui::config::create_controls_tab();
     // RT64 copies no frame into RDRAM: the game never reads a frame it drew, nor writes into one (lib/turok-engine's
     // docs/render_to_ram.md). Its Copy Frames to RAM option turns the copy back on.

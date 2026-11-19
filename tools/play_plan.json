@@ -6,7 +6,7 @@
   "ROM on a new profile once the shader list Chrome builds behind it is done (Firefox builds none there and says so),",
   "Start Game, then, once the boot is past its first stage (tools/survey.js, booted, says why not before), Start",
   "(Enter) every 2.5 s through the legal screen, the logos, the title and the menus into a new",
-  "game, whose two opening cinematics (about 2 minutes 10 s, which Start doesn't skip) it waits out until the player has",
+  "game, whose two opening cinematics (about 2 minutes 10 s, which Start would skip) it waits out until the player has",
   "control in the first level, the Port of Adia (tools/survey.js; a need fails the run otherwise). There the plan walks,",
   "turns, jumps and fires for about 75 s, opening and closing the pause menu (Enter) and the map (Tab) on the way. Its",
   "waits and holds are the browser's time: the game has no clock the plan reads.",
