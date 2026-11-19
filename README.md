@@ -42,7 +42,11 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   | Pause | Enter | Start |
 
   The mouse turns and looks as the right stick does, on from the first start (General, Mouse Sensitivity, 50%; 0
-  turns it off and leaves the cursor free).
+  turns it off and leaves the cursor free). How fast the right stick turns is General's Stick Sensitivity (100% is
+  the game's own), and how far it goes before it turns is Joystick Deadzone.
+
+  The game starts at its title, past the legal screen, the Expansion Pak's screen and the logos (General, Skip
+  Intro, on), and Start (Enter) skips a cinematic.
 
 ## The ROM
 

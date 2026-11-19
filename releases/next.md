@@ -1,0 +1,3 @@
+- **Skip Intro** (General, on): the game starts at its title, past the legal screen, the Expansion Pak's screen and the logos, about a minute sooner.
+- **Start skips a cinematic**, the two that open a new game included (over two minutes of them).
+- **Stick Sensitivity** (General): how fast the right stick turns the view and looks up and down, from 10% to 300% of the game's own speed. With **Joystick Deadzone** beside it, the stick can be set to suit the pad.
