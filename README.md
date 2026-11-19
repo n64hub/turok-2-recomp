@@ -52,8 +52,8 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
 
   How fast you walk is General's Movement Speed: 100% is the game's own, up to 200%.
 
-  The game starts at its title, past the legal screen, the Expansion Pak's screen and the logos (General, Skip
-  Intro, on), and Start (Enter) skips a cinematic.
+  The game starts at its title, past the Controller Pak's wait, the legal screen, the Expansion Pak's screen and the
+  logos, about 4 s after it is opened (General, Skip Intro, on), and Start (Enter) skips a cinematic.
 
 ## The ROM
 
