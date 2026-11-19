@@ -61,7 +61,7 @@
 
 #include "icon_bytes.h"
 
-const std::string version_string = "0.2.15";
+const std::string version_string = "0.2.16";
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
@@ -566,11 +566,13 @@ int main(int argc, char** argv) {
         .get_rsp_microcode = get_rsp_microcode,
     };
 
-    // Skip Buffering: RT64 presents a framebuffer once the game swaps to it at a VI. Present Early, which shows one as
-    // soon as a task fills it, is untried with this game.
+    // Present Early: RT64 presents a framebuffer as soon as the task that drew it is done, not at the VI the game swaps
+    // it in at (Skip Buffering). The frame starts late (us.toml, lib/turok-engine's src/frame_pacing.cpp), so its task
+    // ends just before that VI: presented then, it reaches the screen sooner, and RT64 has the time to present the
+    // frame it interpolates between it and the next, which Skip Buffering dropped for about one frame in three.
     ultramodern::renderer::callbacks_t renderer_callbacks{
         .create_render_context = [](uint8_t* rdram, ultramodern::renderer::WindowHandle window_handle, bool developer_mode) {
-            return recompui::renderer::create_render_context(rdram, window_handle, ultramodern::renderer::PresentationMode::SkipBuffering, developer_mode);
+            return recompui::renderer::create_render_context(rdram, window_handle, ultramodern::renderer::PresentationMode::PresentEarly, developer_mode);
         },
     };
 

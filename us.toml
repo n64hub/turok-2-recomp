@@ -259,3 +259,52 @@ text = "    { float t2_movement_speed(void); union { int32_t i; float f; } v = {
 func = "func_0027D160"
 before_vram = 0x0027D8E0
 text = "    { float t2_field_of_view(float); ctx->f1.fl = t2_field_of_view(ctx->f1.fl + ctx->f0.fl); ctx->f0.fl = 0.0f; }"
+
+# A frame sooner from the stick (lib/turok-engine's docs/input_lag.md). The player update (func_00251FC4, its list of
+# players at +0x20 of a0, in s2) moves and turns each player, and only then fills in each one's stick and buttons from
+# the pad this frame latched (func_00246BC0, at 0x002520C8, each player's input at +0xA40): every move and turn used the
+# pad of the frame before. The fill runs for that list before the update instead, from the same latched pad, and not
+# after it.
+[[patches.hook]]
+func = "func_00251FC4"
+before_vram = 0x00252004
+text = "    { for (uint32_t p = MEM_W(0x20, ctx->r18); p != 0; p = MEM_W(0x1320, (gpr)(int32_t)p)) { ctx->r4 = (gpr)(int32_t)(p + 0xA40); ctx->r5 = (gpr)(int32_t)p; func_00246BC0(rdram, ctx); } }"
+
+[[patches.instruction]]
+func = "func_00251FC4"
+vram = 0x002520C8
+value = 0x00000000
+
+# And a frame sooner to the picture: the frame (func_00287248) drew the world (func_0027ECF0, a0 = fp + 0x22C00, at
+# 0x002872D4) before the game mode's update (the jalr at 0x00287310), so it showed the world as the update before left
+# it. The world is drawn just after the update (v0, live there, kept).
+[[patches.instruction]]
+func = "func_00287248"
+vram = 0x002872D4
+value = 0x00000000
+
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x0028731C
+text = "    { gpr v0 = ctx->r2; ctx->r4 = ctx->r30 + 0x22C00; func_0027ECF0(rdram, ctx); ctx->r2 = v0; }"
+
+# And a retrace sooner (lib/turok-engine's src/frame_pacing.cpp): the frame starts a retrace before the one it is
+# swapped in at, not right after the swap before it, so it reads the pad and moves the world that much later. The
+# game's retraces a frame is shown for are the word at 0x8011AD10 and its count of retraces since the frame on the
+# screen was swapped in the word at 0x8011AD88. The frame waits at its start, once its registers are saved (before
+# the jal at 0x00287274); it has sent its task at 0x002878BC; and the retrace handler (func_0028A17C) has sent the
+# retrace to the game's threads and read the pads at 0x0028A428.
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x00287274
+text = "    { void turok_start_frame_late(uint8_t*, recomp_context*, uint32_t, uint32_t); turok_start_frame_late(rdram, ctx, 0x8011AD10, 0x8011AD88); }"
+
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x002878BC
+text = "    { void turok_frame_sent(uint8_t*); turok_frame_sent(rdram); }"
+
+[[patches.hook]]
+func = "func_0028A17C"
+before_vram = 0x0028A428
+text = "    { void turok_retrace(uint8_t*); turok_retrace(rdram); }"
