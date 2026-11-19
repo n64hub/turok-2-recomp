@@ -10,8 +10,12 @@
 //
 // Skip Intro (General, on by default) shortens the boot's screens: the title comes about 4 s after the start, not 13.
 // - Mode 0, "Accessing the Controller Pak": the game reads the pak and then holds the screen on a countdown of about
-//   4 s, which t2_boot_wait ends. Start isn't pressed here: Start held as the game leaves mode 0 opens its Controller
-//   Pak menu, as on the console, and the menu takes no Start to leave.
+//   4 s, which t2_boot_wait ends. Start held as the game leaves mode 0 opens its Controller Pak menu, as on the
+//   console, and the menu takes no Start to leave (A, EXIT). With the countdown ended and Start seen in mode 0, the
+//   save check's plan, which presses Enter every 1.5 s from the start, never reached a new game in 4 of 7 runs (none of
+//   5 with the countdown left alone), most likely stopped in that menu; with Start hidden from the game in mode 0 it
+//   reached it in all of 4. So with Skip Intro on the game sees no Start in mode 0, and with it Off, Start held at the
+//   boot opens the menu as on the console.
 // - Mode 1, the legal screen, takes no Start: it leaves once its time (the float at 0x8011AC80, each mode's time,
 //   counting at 15 a second from 0) passes about 75, 5 s. Skip Intro sets it there, and the screen fades out at once.
 // - From mode 1 until the title, Start is pressed for the player at every other reading, as a player pressing through
@@ -88,7 +92,8 @@ void t2::add_skip_intro_option(recomp::config::Config& general) {
         skip_intro_option,
         "Skip Intro",
         "Goes from the start straight to the title, past the Controller Pak's wait, the legal screen, the Expansion "
-        "Pak's screen and the logos. "
+        "Pak's screen and the logos. Off, holding Start as the game starts opens the Controller Pak's menu, as on "
+        "the console. "
         "Start skips a cinematic either way.",
         skip_intro_options,
         SkipIntro::On
@@ -117,6 +122,10 @@ extern "C" void t2_pad_read(uint8_t* rdram, recomp_context* ctx) {
     bool held_before = ((uint32_t)MEM_W(0x18, pad) & kStart) != 0;
     int32_t mode = MEM_W(0, (gpr)(int32_t)kMode);
 
+    if (skip_intro_on && mode == 0) {
+        ctx->r7 = (gpr)(int32_t)(buttons & ~kStart);
+        return;
+    }
     if (skip_intro_on && mode >= 1 && mode <= 6) {
         // The legal screen takes no Start: it leaves once its time is up.
         if (mode == 1 && read_float(rdram, kModeTime) < kLegalTime) {
