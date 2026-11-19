@@ -235,7 +235,9 @@ target_sources(Turok2Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/main/crash_trace.cpp
     ${CMAKE_SOURCE_DIR}/src/main/register_overlays.cpp
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/field_of_view.cpp
     ${CMAKE_SOURCE_DIR}/src/game/fog.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/movement_speed.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
     ${CMAKE_SOURCE_DIR}/src/game/skips.cpp
     # The engine the Turok games share (lib/turok-engine/README.md).

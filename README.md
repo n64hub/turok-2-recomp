@@ -29,6 +29,9 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   in a window wider than that the outer edges may show things appearing late.
 - **Fog:** the Graphics tab's Fog, Off, takes the fog away and draws the world four times as far before it ends, which
   may cost some speed; On is the game as it was made.
+- **Field of View:** the Graphics tab's Field of View widens (up to 150%) or narrows (down to 70%) the game's own view,
+  which the game sets per area of a level; cinematics keep the game's own. **MS Anti-Aliasing** goes up to 8X, where
+  the GPU can take it.
 - **Smooth motion:** the game runs at its own rate and RT64 draws the frames in between at the display's (the Graphics
   tab's Framerate; Original shows the game's own).
 - **Controls**, all rebindable on the Controls tab:
@@ -46,6 +49,8 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   The mouse turns and looks as the right stick does, on from the first start (General, Mouse Sensitivity, 50%; 0
   turns it off and leaves the cursor free). How fast the right stick turns is General's Stick Sensitivity (100% is
   the game's own), and how far it goes before it turns is Joystick Deadzone.
+
+  How fast you walk is General's Movement Speed: 100% is the game's own, up to 200%.
 
   The game starts at its title, past the legal screen, the Expansion Pak's screen and the logos (General, Skip
   Intro, on), and Start (Enter) skips a cinematic.

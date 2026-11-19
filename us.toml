@@ -237,3 +237,17 @@ text = "    { float t2_far_scale(void); ctx->f6.fl *= t2_far_scale(); }"
 func = "func_0027E000"
 before_vram = 0x0027E5D8
 text = "    { int t2_fog_on(void); if (!t2_fog_on()) MEM_W(0x4, ctx->r5) = 0; }"
+# The General tab's Movement Speed (src/game/movement_speed.cpp). func_00254640 sets the player's speed factor (+0xB28 of
+# the player's struct, s0) afresh on every path, the game's own debug "player speed" included, and every path ends at
+# 0x002546F0: the setting multiplies it there.
+[[patches.hook]]
+func = "func_00254640"
+before_vram = 0x002546F0
+text = "    { float t2_movement_speed(void); union { int32_t i; float f; } v = { MEM_W(0xB28, ctx->r16) }; v.f *= t2_movement_speed(); MEM_W(0xB28, ctx->r16) = v.i; }"
+# The Graphics tab's Field of View (src/game/field_of_view.cpp). Out of a cinematic, the camera (func_0027D160) eases its
+# view angle in degrees, f22 = f1 + f0 at 0x0027D8E0, before it makes its perspective and culling from it: the hook has
+# the add give the scaled angle. A cinematic's angle (func_00284390's) joins after it, at 0x0027D8E4, and is left alone.
+[[patches.hook]]
+func = "func_0027D160"
+before_vram = 0x0027D8E0
+text = "    { float t2_field_of_view(float); ctx->f1.fl = t2_field_of_view(ctx->f1.fl + ctx->f0.fl); ctx->f0.fl = 0.0f; }"
