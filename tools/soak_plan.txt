@@ -8,13 +8,14 @@
 #
 # A round: the boot, Start (Enter) through the title into the main menu (mode 8), Single and New Game, past the
 # Controller Pak note and the Important screen, into the first cinematic (mode 11, Adon and the Eye of Truth), and the
-# Port of Adia's opening cinematic (12), which loads the first level. Start skips neither: the two take about 2 minutes
-# 15 s, most of the round, which is why it runs to 3 minutes 25 s with the boot. Then, with the player in control (13),
-# 12 s of random moves, turns, jumps and weapon changes, the map (Tab) open and closed, the pause menu (Enter) with
-# Mission Status (closed with Q, B) and Inventory (closed with Enter, its OK) opened, Q back to the game, and random
-# input to the end. The word at 0x8011AC88 is the game's mode (tools/survey.js says what each is); each `until` waits on
-# it, so the round keeps step with a slow boot. The Port of Adia's first level change is minutes of play away, past the
-# round: the level the cinematics load is this round's one.
+# Port of Adia's opening cinematic (12), which loads the first level. Start would skip them (src/game/skips.cpp), and
+# the round presses nothing in them: the two take about 2 minutes 15 s, most of the round, which is why it runs to 3
+# minutes 25 s with the boot. Then, with the player in control (13), 12 s of random moves, turns, jumps and weapon
+# changes, the map (Tab) open and closed, the pause menu (Enter) with Mission Status (closed with Q, B) and Inventory
+# (closed with Enter, its OK) opened, Q back to the game, and random input to the end. The word at 0x8011AC88 is the
+# game's mode (tools/survey.js says what each is); each `until` waits on it, so the round keeps step with a slow boot.
+# The Port of Adia's first level change is minutes of play away, past the round: the level the cinematics load is this
+# round's one.
 10 until 0x8011AC88 0xFFFFFFFF 8 60 Enter
 11 shot menu
 12 until 0x8011AC88 0xFFFFFFFF 11 30 Enter

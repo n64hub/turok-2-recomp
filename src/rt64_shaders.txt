@@ -7,7 +7,7 @@
 # Recorded by code, not by playing: node lib/N64Recomp-browser/tools/record_shaders.mjs tools/shader_plan.json build/web
 # roms/turok2.us.z64 src/rt64_shaders.txt (its header says how), on tools/build_web.sh's page. Section 0 is the
 # launcher, the boot (the legal screen, the logos and the title), the menus pressed through with Start (Enter), and a
-# new game's two opening cinematics, about 2 minutes 10 s that Start doesn't skip, waited out until the player has
+# new game's two opening cinematics, about 2 minutes 10 s that Start would skip, waited out until the player has
 # control in the first level, the Port of Adia (tools/survey.js). Then the Port of Adia, walked, turned, jumped and
 # fired in for half a minute, and the plan's last section, pause, which goes into section 0: the pause menu and the
 # map, which come up in any level. Each section is a load of its own, the opening included. Not recorded: the levels

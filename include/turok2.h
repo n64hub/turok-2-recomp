@@ -19,6 +19,9 @@ namespace t2 {
     // The settings (config.cpp): RecompFrontend's tabs.
     void init_config();
 
+    // The General tab's Skip Intro (skips.cpp, which also has Start skip the cinematics), before the config is finalized.
+    void add_skip_intro_option(recomp::config::Config& general);
+
     // The Graphics tab's Fog (fog.cpp, with us.toml's hooks in the camera and the frame), before the config is finalized.
     void add_fog_option(recomp::config::Config& graphics);
 

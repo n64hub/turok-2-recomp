@@ -46,7 +46,7 @@ game's two opening cinematics, the pause menu and the map, built behind the laun
 Adia's 3 are built after. `tools/shader_plan.json` records it with N64Recomp-browser's `tools/record_shaders.mjs`,
 without anyone playing: `tools/survey.js` reads the game's mode word, its player and whether a cinematic plays, so the
 plan presses Start through the legal screen, the logos, the title and the menus into a new game, waits out the two
-opening cinematics (about 2 minutes 10 s, which Start doesn't skip) until the player has control, and walks, turns,
+opening cinematics (about 2 minutes 10 s, which Start would skip) until the player has control, and walks, turns,
 jumps and fires in the Port of Adia. Record it again after a change that draws something new.
 
 `tools/play_plan.json` is the page's regular play, the same way into the level and then about 75 s of play with the

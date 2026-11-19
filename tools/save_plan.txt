@@ -1,6 +1,6 @@
 # The save run of the save check (README.md, with tools/load_plan.txt): Start through the title, SINGLE and NEW GAME
 # into the Port of Adia (state word 0x8011AC88 = 0xB as the level loads, 0xD once it plays, the player at 0x80119890):
-# Start takes its opening cinematic on to the level's cutscene (0xC), and A skips that.
+# Start skips the two opening cinematics (src/game/skips.cpp) on to the level (0xD).
 # A save portal's menu is then opened where the player stands, as walking onto one would: the request at 0x801198A4
 # set and 0x801198A8 cleared, which the level's code polls, and the flag at [0x800C1BB0]+0x3C that tells it the
 # portal's cutscene is over. The game's own menu then saves with A (Save) and A (the first free note), which writes
