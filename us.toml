@@ -202,3 +202,23 @@ value = 0x3C020008
 func = "func_0024EF70"
 before_vram = 0x0024F14C
 text = "    { void turok_spring_look(uint8_t*, uint32_t, float, uint32_t, float, gpr*, float, float); union { int32_t i; float f; } lo = { MEM_W(0x10, ctx->r16) }, hi = { MEM_W(0x14, ctx->r16) }; turok_spring_look(rdram, (uint32_t)ctx->r18 + 0x50, 1.0f, (uint32_t)ctx->r17 + 0xAC8, 1.0f, &ctx->r5, lo.f, hi.f); }"
+
+# Stick Sensitivity (lib/turok-engine's docs/mouse_look.md): the look reads the stick's deflection as floats at +0xA54
+# (x, to turn) and +0xA58 (y, to look up and down) of its struct, s1, into f0, and multiplies it into the yaw's target
+# (0x0024F0B4) and the pitch's (0x0024F0F0): both are multiplied by the setting first.
+[[patches.hook]]
+func = "func_0024EF70"
+before_vram = 0x0024F0B4
+text = "    { float turok_stick_sensitivity(void); ctx->f0.fl *= turok_stick_sensitivity(); }"
+
+[[patches.hook]]
+func = "func_0024EF70"
+before_vram = 0x0024F0F0
+text = "    { float turok_stick_sensitivity(void); ctx->f0.fl *= turok_stick_sensitivity(); }"
+
+# Skip Intro and Start skipping a cinematic (src/game/skips.cpp): each pad's reading (func_00284EB8, the pad's struct in
+# a0, its buttons in a3) starts with the buttons the game is about to read changed.
+[[patches.hook]]
+func = "func_00284EB8"
+before_vram = 0x00284EB8
+text = "    { void t2_pad_read(uint8_t*, recomp_context*); t2_pad_read(rdram, ctx); }"
