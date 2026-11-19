@@ -1,0 +1,1 @@
+- **Fog can be turned off** (Graphics, Fog): the world is then drawn clear to four times as far as the fog let it reach, with no fog, and the game looks as it always has with Fog On.
