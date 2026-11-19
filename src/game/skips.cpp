@@ -8,9 +8,14 @@
 // first cinematic, 12 the Port of Adia's, 13 the game. Left alone, the title comes about 72 s after the start (65 s of
 // it after mode 0).
 //
-// Skip Intro (General, on by default): from mode 1 until the title, Start is pressed for the player at every other
-// reading, as a player pressing through the screens would. Not in mode 0: Start held as the game leaves it opens its
-// Controller Pak menu, as on the console, and the menu takes no Start to leave.
+// Skip Intro (General, on by default) shortens the boot's screens: the title comes about 4 s after the start, not 13.
+// - Mode 0, "Accessing the Controller Pak": the game reads the pak and then holds the screen on a countdown of about
+//   4 s, which t2_boot_wait ends. Start isn't pressed here: Start held as the game leaves mode 0 opens its Controller
+//   Pak menu, as on the console, and the menu takes no Start to leave.
+// - Mode 1, the legal screen, takes no Start: it leaves once its time (the float at 0x8011AC80, each mode's time,
+//   counting at 15 a second from 0) passes about 75, 5 s. Skip Intro sets it there, and the screen fades out at once.
+// - From mode 1 until the title, Start is pressed for the player at every other reading, as a player pressing through
+//   the screens would.
 //
 // The cinematics: Start, which they otherwise ignore, skips one. A cinematic is a run of camera shots, the object at
 // *0x800C1BB0 playing while its +0x38 is set, each shot's time (+0x1C, a float) running from its start (+0x30) to its
@@ -33,6 +38,9 @@
 namespace {
     constexpr uint32_t kMode = 0x8011AC88;
     constexpr uint32_t kCinematic = 0x800C1BB0;
+    constexpr uint32_t kBootWait = 0x8011AD40;
+    constexpr uint32_t kModeTime = 0x8011AC80;
+    constexpr float kLegalTime = 75.0f;
     constexpr uint32_t kStart = 0x1000;
 
     const std::string skip_intro_option = "skip_intro";
@@ -79,7 +87,8 @@ void t2::add_skip_intro_option(recomp::config::Config& general) {
     general.add_enum_option(
         skip_intro_option,
         "Skip Intro",
-        "Goes from the start straight to the title, past the legal screen, the Expansion Pak's screen and the logos. "
+        "Goes from the start straight to the title, past the Controller Pak's wait, the legal screen, the Expansion "
+        "Pak's screen and the logos. "
         "Start skips a cinematic either way.",
         skip_intro_options,
         SkipIntro::On
@@ -93,6 +102,15 @@ void t2::add_skip_intro_option(recomp::config::Config& general) {
         });
 }
 
+// The boot's "Accessing the Controller Pak" screen: the game reads the pak and then holds the screen for about 4 s
+// more, a countdown (the float at kBootWait, about 120 at 30 a second) that func_0028917C takes each frame's time from, moving the boot
+// on once it is 0. Skip Intro ends it there, in mode 0 only; the pak has been read by then.
+extern "C" void t2_boot_wait(uint8_t* rdram) {
+    if (skip_intro_on && MEM_W(0, (gpr)(int32_t)kMode) == 0 && read_float(rdram, kBootWait) > 0.0f) {
+        write_float(rdram, kBootWait, 0.0f);
+    }
+}
+
 extern "C" void t2_pad_read(uint8_t* rdram, recomp_context* ctx) {
     gpr pad = ctx->r4;
     uint32_t buttons = (uint32_t)ctx->r7 & 0xFFFF;
@@ -100,6 +118,10 @@ extern "C" void t2_pad_read(uint8_t* rdram, recomp_context* ctx) {
     int32_t mode = MEM_W(0, (gpr)(int32_t)kMode);
 
     if (skip_intro_on && mode >= 1 && mode <= 6) {
+        // The legal screen takes no Start: it leaves once its time is up.
+        if (mode == 1 && read_float(rdram, kModeTime) < kLegalTime) {
+            write_float(rdram, kModeTime, kLegalTime);
+        }
         // Pressed at one reading and let go at the next, so each press is a new one.
         if (!held_before) {
             ctx->r7 = (gpr)(int32_t)(buttons | kStart);

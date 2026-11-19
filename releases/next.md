@@ -1,0 +1,1 @@
+- **Skip Intro is quicker:** the "Accessing the Controller Pak" screen no longer waits about 4 seconds after reading the pak, and the legal screen goes as soon as it comes, so the title is up about 4 s after the game starts instead of 13.

@@ -223,6 +223,14 @@ func = "func_00284EB8"
 before_vram = 0x00284EB8
 text = "    { void t2_pad_read(uint8_t*, recomp_context*); t2_pad_read(rdram, ctx); }"
 
+# Skip Intro (src/game/skips.cpp): the boot's "Accessing the Controller Pak" screen (mode 0) is held up by a countdown,
+# the float at 0x8011AD40, which func_0028917C takes each frame's time from (0x800B6D28) and moves the boot on at once
+# it reaches 0. The hook, before it reads it, ends it.
+[[patches.hook]]
+func = "func_0028917C"
+before_vram = 0x00289198
+text = "    { void t2_boot_wait(uint8_t*); t2_boot_wait(rdram); }"
+
 # The Graphics tab's Fog (src/game/fog.cpp). The camera's region lookup (func_0027CAB0) has read the region's far
 # distance from its record into f6, on both of its paths (+0x10, or +0x18): Off scales it there, before the camera eases
 # its own far distance (+0x510 of its struct, the far plane and the culling's reach) towards it.
