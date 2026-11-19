@@ -27,8 +27,10 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   what goes with it) sits at the window's sides, and the border the game draws round its 4:3 screen is left out
   (lib/turok-engine's `docs/widescreen.md`). The game culls what's outside its view; that view is widened to 21:9, so
   in a window wider than that the outer edges may show things appearing late.
-- **Fog:** the Graphics tab's Fog, Off, takes the fog away and draws the world four times as far before it ends, which
-  may cost some speed; On is the game as it was made.
+- **Fog and Draw Distance:** the Graphics tab's Fog, Off, takes the fog away; On is the game as it was made. Its Draw
+  Distance, Far, draws all of the level the game has loaded, where the console leaves out whole pieces of it its fog
+  would hide, and with Fog off draws the world four times as far before it ends, which may cost some speed. Normal
+  draws what the console does. What the game hasn't loaded yet (a level comes in parts) still isn't drawn.
 - **Field of View:** the Graphics tab's Field of View widens (up to 150%) or narrows (down to 70%) the game's own view,
   which the game sets per area of a level; cinematics keep the game's own. **MS Anti-Aliasing** goes up to 8X, where
   the GPU can take it.

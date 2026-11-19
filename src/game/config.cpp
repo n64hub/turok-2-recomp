@@ -99,6 +99,7 @@ void t2::init_config() {
     recomp::config::Config& graphics = recompui::config::create_graphics_tab();
     turok::add_copy_frames_option(graphics);
     t2::add_fog_option(graphics);
+    t2::add_draw_distance_option(graphics);
     t2::add_field_of_view_option(graphics);
     recompui::config::create_sound_tab();
     recompui::config::create_mods_tab();

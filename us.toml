@@ -231,20 +231,31 @@ func = "func_0028917C"
 before_vram = 0x00289198
 text = "    { void t2_boot_wait(uint8_t*); t2_boot_wait(rdram); }"
 
-# The Graphics tab's Fog (src/game/fog.cpp). The camera's region lookup (func_0027CAB0) has read the region's far
-# distance from its record into f6, on both of its paths (+0x10, or +0x18): Off scales it there, before the camera eases
-# its own far distance (+0x510 of its struct, the far plane and the culling's reach) towards it.
+# The Graphics tab's Draw Distance (src/game/draw_distance.cpp). The camera's region lookup (func_0027CAB0) has read the
+# region's far distance from its record into f6, on both of its paths (+0x10, or +0x18): Far with the Fog off scales it
+# there, before the camera eases its own far distance (+0x510 of its struct, the far plane and the culling's reach)
+# towards it. It is the record's value that is scaled and not the camera's: the camera copies its own far distance back
+# as the start of each move into a new region, and scaling that again would compound.
 [[patches.hook]]
 func = "func_0027CAB0"
 before_vram = 0x0027CD80
 text = "    { float t2_far_scale(void); ctx->f6.fl *= t2_far_scale(); }"
 
-# The frame (func_0027E000) has just stored its fog command's fog factor (G_MW_FOG, the command at a1): Off makes it 0,
-# no fog at any depth.
+# The Graphics tab's Fog (src/game/fog.cpp). The frame (func_0027E000) has just stored its fog command's fog factor
+# (G_MW_FOG, the command at a1): Off makes it 0, no fog at any depth.
 [[patches.hook]]
 func = "func_0027E000"
 before_vram = 0x0027E5D8
 text = "    { int t2_fog_on(void); if (!t2_fog_on()) MEM_W(0x4, ctx->r5) = 0; }"
+
+# Draw Distance's Far: at the end of the camera's update, the camera (s4) has its area mask (+0x64) for the frame, from
+# the record of the area under it or the game's own; Far makes it every area's, so the level's draw and the actors'
+# leave none of the loaded level's pieces out for the area the camera is in.
+[[patches.hook]]
+func = "func_0027D160"
+before_vram = 0x0027DFAC
+text = "    { int t2_draw_far(void); if (t2_draw_far()) MEM_W(0x64, ctx->r20) = (int32_t)0xFFFFFFFF; }"
+
 # The General tab's Movement Speed (src/game/movement_speed.cpp). func_00254640 sets the player's speed factor (+0xB28 of
 # the player's struct, s0) afresh on every path, the game's own debug "player speed" included, and every path ends at
 # 0x002546F0: the setting multiplies it there.

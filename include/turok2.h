@@ -29,6 +29,10 @@ namespace t2 {
     // The Graphics tab's Fog (fog.cpp, with us.toml's hooks in the camera and the frame), before the config is finalized.
     void add_fog_option(recomp::config::Config& graphics);
 
+    // The Graphics tab's Draw Distance (draw_distance.cpp, with us.toml's hooks in the camera), before the config is
+    // finalized.
+    void add_draw_distance_option(recomp::config::Config& graphics);
+
     // The Graphics tab's Field of View (field_of_view.cpp, with us.toml's hook in the camera), before the config is
     // finalized.
     void add_field_of_view_option(recomp::config::Config& graphics);
