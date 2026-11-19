@@ -256,6 +256,52 @@ func = "func_0027D160"
 before_vram = 0x0027DFAC
 text = "    { int t2_draw_far(void); if (t2_draw_far()) MEM_W(0x64, ctx->r20) = (int32_t)0xFFFFFFFF; }"
 
+# The frame's list of models in use goes past its 256 (src/game/draw_distance.cpp): before each of its three writers
+# checks it is full, its last model is moved out of it, and those are given back after the game's own at the end of
+# the draw (func_0020B624), as the game gives back its own.
+[[patches.hook]]
+func = "func_0020B6A0"
+before_vram = 0x0020B744
+text = "    { void t2_model_list_full(uint8_t*); t2_model_list_full(rdram); }"
+
+[[patches.hook]]
+func = "func_0020B7F8"
+before_vram = 0x0020B928
+text = "    { void t2_model_list_full(uint8_t*); t2_model_list_full(rdram); }"
+
+[[patches.hook]]
+func = "func_0020B9F4"
+before_vram = 0x0020BB1C
+text = "    { void t2_model_list_full(uint8_t*); t2_model_list_full(rdram); }"
+
+# The frame's sort of what it draws goes on past the console's 100 nodes and 500 records (src/game/draw_distance.cpp):
+# func_0020A568 is given arrays eight times the size, for its check of each count and the address it makes each new one
+# at.
+[[patches.hook]]
+func = "func_0020A568"
+before_vram = 0x0020A720
+text = "    { uint32_t t2_sort_nodes(uint8_t*); int32_t t2_sort_scale(void); if (t2_sort_nodes(rdram) != 0) ctx->r2 = 0x64 * t2_sort_scale(); }"
+
+[[patches.hook]]
+func = "func_0020A568"
+before_vram = 0x0020A734
+text = "    { uint32_t t2_sort_nodes(uint8_t*); uint32_t b = t2_sort_nodes(rdram); if (b != 0) ctx->r2 = (gpr)(int32_t)b; }"
+
+[[patches.hook]]
+func = "func_0020A568"
+before_vram = 0x0020A8A8
+text = "    { uint32_t t2_sort_records(uint8_t*); uint32_t b = t2_sort_records(rdram); if (b != 0) ctx->r7 = (gpr)(int32_t)b; }"
+
+[[patches.hook]]
+func = "func_0020A568"
+before_vram = 0x0020A8C8
+text = "    { uint32_t t2_sort_records(uint8_t*); int32_t t2_sort_scale(void); if (t2_sort_records(rdram) != 0) ctx->r8 = 0x1F4 * t2_sort_scale(); }"
+
+[[patches.hook]]
+func = "func_0020B624"
+before_vram = 0x0020B68C
+text = "    { uint32_t t2_model_past_list(void); uint32_t m; while ((m = t2_model_past_list()) != 0) { ctx->r4 = 0; ctx->r5 = (int32_t)m; func_0020565C(rdram, ctx); ctx->r4 = 0; ctx->r5 = (int32_t)m; func_002051F4(rdram, ctx); } }"
+
 # The General tab's Movement Speed (src/game/movement_speed.cpp). func_00254640 sets the player's speed factor (+0xB28 of
 # the player's struct, s0) afresh on every path, the game's own debug "player speed" included, and every path ends at
 # 0x002546F0: the setting multiplies it there.
