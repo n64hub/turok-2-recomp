@@ -1,7 +1,7 @@
 // The settings: RecompFrontend's General, Controls, Graphics, Sound and Mods tabs, with a first-person shooter's default
 // bindings. Its own Graphics options carry what a recomp needs: Resolution and MS Anti-Aliasing (high resolution),
 // Framerate (interpolation to the display's rate) and Aspect Ratio and HUD Placement (widescreen); the game's own Fog
-// (fog.cpp) is added to it.
+// (fog.cpp) and Field of View (field_of_view.cpp) are added to it.
 
 #include <filesystem>
 #include <fstream>
@@ -92,12 +92,14 @@ void t2::init_config() {
     // Stick Sensitivity (lib/turok-engine's docs/mouse_look.md): us.toml's hooks in the look code scale the stick by it.
     turok::add_stick_sensitivity_option(general);
     t2::add_skip_intro_option(general);
+    t2::add_movement_speed_option(general);
     recompui::config::create_controls_tab();
     // RT64 copies no frame into RDRAM: the game never reads a frame it drew, nor writes into one (lib/turok-engine's
     // docs/render_to_ram.md). Its Copy Frames to RAM option turns the copy back on.
     recomp::config::Config& graphics = recompui::config::create_graphics_tab();
     turok::add_copy_frames_option(graphics);
     t2::add_fog_option(graphics);
+    t2::add_field_of_view_option(graphics);
     recompui::config::create_sound_tab();
     recompui::config::create_mods_tab();
     recompui::config::finalize();
