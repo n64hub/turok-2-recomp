@@ -136,6 +136,27 @@ func = "func_0027C1E8"
 before_vram = 0x0027C1E8
 text = "    { void turok_hud_begin(uint8_t*); turok_hud_begin(rdram); }"
 
+# The weapon menu, drawn in control (mode 13) by func_0025322C, is pictures of the weapons in a ring round the middle of
+# the screen, each a few rectangles: in the HUD they were each anchored to a side by where they sat, and a weapon's
+# rectangles came apart across a wide window. The HUD is closed for it, so it is centred as at 4:3. func_0025322C has
+# func_0024C648 draw the player's ring (func_00254D5C or func_0024B3E4) and then their health counter and the rest, so
+# the HUD is opened again where those two calls' paths meet, and where the paths that skip the ring meet in
+# func_0027C1E8 (turok_hud_begin does nothing while the HUD is open).
+[[patches.hook]]
+func = "func_0027C1E8"
+before_vram = 0x0027C4C4
+text = "    { void turok_hud_end(uint8_t*); turok_hud_end(rdram); }"
+
+[[patches.hook]]
+func = "func_0024C648"
+before_vram = 0x0024C754
+text = "    { void turok_hud_begin(uint8_t*); turok_hud_begin(rdram); }"
+
+[[patches.hook]]
+func = "func_0027C1E8"
+before_vram = 0x0027C4CC
+text = "    { void turok_hud_begin(uint8_t*); turok_hud_begin(rdram); }"
+
 [[patches.hook]]
 func = "func_0027C1E8"
 before_vram = 0x0027C4DC
