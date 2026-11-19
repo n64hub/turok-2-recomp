@@ -202,3 +202,18 @@ value = 0x3C020008
 func = "func_0024EF70"
 before_vram = 0x0024F14C
 text = "    { void turok_spring_look(uint8_t*, uint32_t, float, uint32_t, float, gpr*, float, float); union { int32_t i; float f; } lo = { MEM_W(0x10, ctx->r16) }, hi = { MEM_W(0x14, ctx->r16) }; turok_spring_look(rdram, (uint32_t)ctx->r18 + 0x50, 1.0f, (uint32_t)ctx->r17 + 0xAC8, 1.0f, &ctx->r5, lo.f, hi.f); }"
+
+# The Graphics tab's Fog (src/game/fog.cpp). The camera's region lookup (func_0027CAB0) has read the region's far
+# distance from its record into f6, on both of its paths (+0x10, or +0x18): Off scales it there, before the camera eases
+# its own far distance (+0x510 of its struct, the far plane and the culling's reach) towards it.
+[[patches.hook]]
+func = "func_0027CAB0"
+before_vram = 0x0027CD80
+text = "    { float t2_far_scale(void); ctx->f6.fl *= t2_far_scale(); }"
+
+# The frame (func_0027E000) has just stored its fog command's fog factor (G_MW_FOG, the command at a1): Off makes it 0,
+# no fog at any depth.
+[[patches.hook]]
+func = "func_0027E000"
+before_vram = 0x0027E5D8
+text = "    { int t2_fog_on(void); if (!t2_fog_on()) MEM_W(0x4, ctx->r5) = 0; }"
