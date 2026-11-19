@@ -27,6 +27,8 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   what goes with it) sits at the window's sides, and the border the game draws round its 4:3 screen is left out
   (lib/turok-engine's `docs/widescreen.md`). The game culls what's outside its view; that view is widened to 21:9, so
   in a window wider than that the outer edges may show things appearing late.
+- **Fog:** the Graphics tab's Fog, Off, takes the fog away and draws the world four times as far before it ends, which
+  may cost some speed; On is the game as it was made.
 - **Smooth motion:** the game runs at its own rate and RT64 draws the frames in between at the display's (the Graphics
   tab's Framerate; Original shows the game's own).
 - **Controls**, all rebindable on the Controls tab:
