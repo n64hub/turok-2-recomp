@@ -299,6 +299,20 @@ func = "func_00287248"
 before_vram = 0x00287274
 text = "    { void turok_start_frame_late(uint8_t*, recomp_context*, uint32_t, uint32_t); turok_start_frame_late(rdram, ctx, 0x8011AD10, 0x8011AD88); }"
 
+# The frame sends its tasks one of two ways: with the map open (func_00205574(0) true) func_00286B58 sends the world and
+# then the map's lines as two tasks, and otherwise one goes to the scheduler at 0x002878B4. A frame of two tasks is
+# presented with Skip Buffering, and the next starts at once (lib/turok-engine's src/frame_pacing.cpp): presented early,
+# each frame went out twice, the first time without the map.
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x00287880
+text = "    { void turok_frame_tasks(uint8_t*, uint32_t); turok_frame_tasks(rdram, 2); }"
+
+[[patches.hook]]
+func = "func_00287248"
+before_vram = 0x00287898
+text = "    { void turok_frame_tasks(uint8_t*, uint32_t); turok_frame_tasks(rdram, 1); }"
+
 [[patches.hook]]
 func = "func_00287248"
 before_vram = 0x002878BC
