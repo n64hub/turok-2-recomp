@@ -1,1 +1,0 @@
-- **The quicker controls are back:** v0.2.18 and v0.2.19 paced every frame the way v0.2.18's map fix meant only for frames with the map open, so a stick or key press took one retrace (17 ms) longer to reach the picture everywhere, as in v0.2.15, and the browser version presented fewer frames. Only frames with the map open are paced that way now; the map still doesn't stutter.
