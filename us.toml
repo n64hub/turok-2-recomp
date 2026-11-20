@@ -356,14 +356,15 @@ func = "func_00287248"
 before_vram = 0x00287274
 text = "    { void turok_start_frame_late(uint8_t*, recomp_context*, uint32_t, uint32_t); turok_start_frame_late(rdram, ctx, 0x8011AD10, 0x8011AD88); }"
 
-# The frame sends its tasks one of two ways: with the map open (func_00205574(0) true) func_00286B58 sends the world and
-# then the map's lines as two tasks, and otherwise one goes to the scheduler at 0x002878B4. A frame of two tasks is
-# presented with Skip Buffering, and the next starts at once (lib/turok-engine's src/frame_pacing.cpp): presented early,
-# each frame went out twice, the first time without the map.
+# The frame sends its tasks with func_00286B58 (or, where func_00205574(0) gives nothing, one task to the scheduler at
+# 0x002878B4). func_00286B58 sends the world's task (from +0x20 of the frame in $s0, at 0x00286D24), and then, with
+# the map open, the map's lines as a task of its own (from +0x88, while the word at +0x128 is set). A frame of two tasks
+# is presented with Skip Buffering, and the next starts at once (lib/turok-engine's src/frame_pacing.cpp): presented
+# early, each frame went out twice, the first time without the map. Its count is given before the first task is sent.
 [[patches.hook]]
-func = "func_00287248"
-before_vram = 0x00287880
-text = "    { void turok_frame_tasks(uint8_t*, uint32_t); turok_frame_tasks(rdram, 2); }"
+func = "func_00286B58"
+before_vram = 0x00286D24
+text = "    { void turok_frame_tasks(uint8_t*, uint32_t); turok_frame_tasks(rdram, MEM_W(0x128, ctx->r16) != 0 ? 2 : 1); }"
 
 [[patches.hook]]
 func = "func_00287248"
