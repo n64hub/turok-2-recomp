@@ -1,1 +1,0 @@
-- **The map no longer stutters:** with the map open, v0.2.16 showed each of the game's frames twice, the first time without the map, so on a display faster than 60 Hz the map flickered and the picture stuttered. A frame with the map is shown once again, as in v0.2.15; while the map is open a press takes one retrace (17 ms) longer to reach the picture than with it closed.
