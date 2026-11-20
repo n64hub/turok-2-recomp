@@ -236,6 +236,7 @@ target_sources(Turok2Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/main/register_overlays.cpp
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
     ${CMAKE_SOURCE_DIR}/src/game/field_of_view.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/draw_distance.cpp
     ${CMAKE_SOURCE_DIR}/src/game/fog.cpp
     ${CMAKE_SOURCE_DIR}/src/game/movement_speed.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp

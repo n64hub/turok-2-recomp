@@ -27,6 +27,10 @@
 // it starts, so the game plays through the rest of the cinematic's shots, one a frame, and whatever comes at its end
 // comes as it would (the level after the first, the player's control after the second). The press itself is taken from
 // the game, which would pause with it once the player has control.
+//
+// A save portal is no cinematic to skip, though it plays as one: walking into one sets the word at 0x801198A4 until the
+// player leaves it, and its shots (Adon, held while her menu is up, and the turns to the save's screens) play all the
+// while. Its menus take Start to choose, as A, so while that word is set, Start is the game's.
 
 #include <cstdint>
 #include <cstring>
@@ -46,6 +50,7 @@ namespace {
     constexpr uint32_t kModeTime = 0x8011AC80;
     constexpr float kLegalTime = 75.0f;
     constexpr uint32_t kStart = 0x1000;
+    constexpr uint32_t kSavePortal = 0x801198A4;
 
     const std::string skip_intro_option = "skip_intro";
     enum class SkipIntro { Off, On };
@@ -135,6 +140,11 @@ extern "C" void t2_pad_read(uint8_t* rdram, recomp_context* ctx) {
         if (!held_before) {
             ctx->r7 = (gpr)(int32_t)(buttons | kStart);
         }
+        return;
+    }
+
+    if (MEM_W(0, (gpr)(int32_t)kSavePortal) != 0) {
+        skipping = false;
         return;
     }
 
