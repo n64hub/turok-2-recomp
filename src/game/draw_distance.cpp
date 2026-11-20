@@ -11,13 +11,12 @@
 // - Distance. The camera's far distance (+0x510, from the region's record as fog.cpp has it) ends the world, and the
 //   fog is thickest there.
 //
-// Far does two things:
-// - The camera's area mask is set to every area's, so every piece of the loaded level is drawn that is in view.
-// - With the Fog off, the region's far distance is multiplied by kFarScale, so the world goes on that much further
-//   before it ends. With the fog on, the fog ends where the world does, and it is left as the game made it.
-// What the game hasn't loaded is still not drawn: a level is loaded in parts (the town of the Port of Adia is not loaded
-// on its docks), and with the fog off the end of the part loaded shows as sky.
-// Normal is the game as it was made.
+// Far sets the camera's area mask to every area's, so every piece of the loaded level is drawn that is in view. What
+// the game hasn't loaded is still not drawn: a level is loaded in parts (the town of the Port of Adia is not loaded on
+// its docks), and with the fog off the end of the part loaded shows as sky. Normal is the game's own masks.
+//
+// At either, with the Fog off, the region's far distance is multiplied by kFarScale, so the world goes on that much
+// further before it ends. With the fog on, the fog ends where the world does, and it is left as the game made it.
 //
 // At either, the frame's lists of what it draws are made longer (below): the console's run out in places, more so at
 // Far, and then leave out the pieces nearest the camera.
@@ -49,8 +48,8 @@ void t2::add_draw_distance_option(recomp::config::Config& graphics) {
         "Draw Distance",
         "How much of the level is drawn."
         "<br/>"
-        "<b>Far:</b> all of the level that is loaded, also what the console leaves to its fog, and with Fog off four "
-        "times as far before the world ends. Drawing more may cost speed."
+        "<b>Far:</b> all of the level that is loaded, also what the console leaves to its fog. Drawing more may cost "
+        "speed."
         "<br/>"
         "<b>Normal:</b> what the console draws, with whole pieces of the level left out where its fog would hide them.",
         draw_distance_options,
@@ -72,7 +71,7 @@ extern "C" int t2_draw_far(void) {
 extern "C" int t2_fog_on(void);
 
 extern "C" float t2_far_scale(void) {
-    return draw_far && !t2_fog_on() ? kFarScale : 1.0f;
+    return t2_fog_on() ? 1.0f : kFarScale;
 }
 
 // The frame's list of models in use. Each time the level's draw starts a batch of another model (func_0020B6A0, and

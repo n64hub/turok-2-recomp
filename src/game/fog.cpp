@@ -10,8 +10,8 @@
 //
 // Off gives the frame's fog command (G_MW_FOG) a fog factor of 0 for every depth: with the fog's start and end left as
 // they were, the fog's thickness at a distance d is about 1 - start/d, whatever the far plane, so the fog has to go
-// itself; pushing the far plane out leaves it where it was. How far the world then goes on is Draw Distance's
-// (draw_distance.cpp). On is the game as it was made.
+// itself; pushing the far plane out leaves it where it was. Off also draws the world four times as far before it ends
+// (draw_distance.cpp's t2_far_scale). On is the game as it was made.
 
 #include <string>
 #include <vector>
@@ -36,7 +36,8 @@ void t2::add_fog_option(recomp::config::Config& graphics) {
         "Fog",
         "Whether the world fades into fog in the distance, as the game was made."
         "<br/>"
-        "<b>Off:</b> no fog. With Draw Distance at Far, the world is also drawn four times as far before it ends.",
+        "<b>Off:</b> no fog, and the world is drawn four times as far before it ends. Drawing more of the world may cost "
+        "speed.",
         fog_options,
         Fog::On
     );

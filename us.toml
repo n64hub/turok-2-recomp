@@ -232,7 +232,7 @@ before_vram = 0x00289198
 text = "    { void t2_boot_wait(uint8_t*); t2_boot_wait(rdram); }"
 
 # The Graphics tab's Draw Distance (src/game/draw_distance.cpp). The camera's region lookup (func_0027CAB0) has read the
-# region's far distance from its record into f6, on both of its paths (+0x10, or +0x18): Far with the Fog off scales it
+# region's far distance from its record into f6, on both of its paths (+0x10, or +0x18): the Fog off scales it
 # there, before the camera eases its own far distance (+0x510 of its struct, the far plane and the culling's reach)
 # towards it. It is the record's value that is scaled and not the camera's: the camera copies its own far distance back
 # as the start of each move into a new region, and scaling that again would compound.
