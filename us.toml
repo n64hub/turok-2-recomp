@@ -326,6 +326,27 @@ func = "func_0027D160"
 before_vram = 0x0027D8E0
 text = "    { float t2_field_of_view(float); ctx->f1.fl = t2_field_of_view(ctx->f1.fl + ctx->f0.fl); ctx->f0.fl = 0.0f; }"
 
+# The weapon keeps the game's own view whatever the Field of View (src/game/field_of_view.cpp). On every path the camera
+# has its perspective's fovy in f22 here, just before it makes it: how much wider than the game's own it is.
+[[patches.hook]]
+func = "func_0027D160"
+before_vram = 0x0027D9AC
+text = "    { void t2_field_of_view_perspective(uint32_t, float); t2_field_of_view_perspective((uint32_t)ctx->r20, ctx->f22.fl); }"
+
+# The weapon (func_00249898, the player in s1, the view's camera in s2) clears the depth buffer (func_0028852C), queues
+# its models (func_0021D39C) and draws them as the queue is flushed (func_0020B624): its view's matrix with the game's
+# own field of view is loaded after the clear, and after the flush the weapon's own loads of the camera's matrix take
+# it too and the camera's own is loaded again.
+[[patches.hook]]
+func = "func_00249898"
+before_vram = 0x0024999C
+text = "    { void t2_weapon_view_begin(uint8_t*, uint32_t); t2_weapon_view_begin(rdram, (uint32_t)ctx->r18); }"
+
+[[patches.hook]]
+func = "func_00249898"
+before_vram = 0x00249A40
+text = "    { void t2_weapon_view_end(uint8_t*); t2_weapon_view_end(rdram); }"
+
 # A frame sooner from the stick (lib/turok-engine's docs/input_lag.md). The player update (func_00251FC4, its list of
 # players at +0x20 of a0, in s2) moves and turns each player, and only then fills in each one's stick and buttons from
 # the pad this frame latched (func_00246BC0, at 0x002520C8, each player's input at +0xA40): every move and turn used the

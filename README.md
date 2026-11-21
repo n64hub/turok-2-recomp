@@ -32,8 +32,8 @@ a browser through WebGPU, at [n64hub.com/turok-2](https://n64hub.com/turok-2/) (
   would hide, and with Fog off draws the world four times as far before it ends, which may cost some speed. Normal
   draws what the console does. What the game hasn't loaded yet (a level comes in parts) still isn't drawn.
 - **Field of View:** the Graphics tab's Field of View widens (up to 150%) or narrows (down to 70%) the game's own view,
-  which the game sets per area of a level; cinematics keep the game's own. **MS Anti-Aliasing** goes up to 8X, where
-  the GPU can take it.
+  which the game sets per area of a level; cinematics keep the game's own, and the weapon in Turok's hands its own
+  look. **MS Anti-Aliasing** goes up to 8X, where the GPU can take it.
 - **Smooth motion:** the game runs at its own rate and RT64 draws the frames in between at the display's (the Graphics
   tab's Framerate; Original shows the game's own).
 - **Controls**, all rebindable on the Controls tab:
