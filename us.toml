@@ -410,3 +410,13 @@ text = "    { void turok_frame_sent(uint8_t*); turok_frame_sent(rdram); }"
 func = "func_0028A17C"
 before_vram = 0x0028A428
 text = "    { void turok_retrace(uint8_t*); turok_retrace(rdram); }"
+
+# The retrace handler's watchdog: it counts retraces at 0x800B6E50, a finished graphics task sets the count back to 0,
+# and at 1200 (20 s at 60 Hz) it stores to address 0 (`sb $zero, 0($zero)`) to stop the game, since on a console a task
+# that long means the RCP has hung. Here RT64 draws the task, which can take that long on a slow or software GPU:
+# under Mesa's lavapipe on a busy host the game went 20 s without a task finished in its first half minute, and the
+# store crashed it with SIGSEGV in thread [Game] 7. A nop in its place: a task that ends late ends.
+[[patches.instruction]]
+func = "func_0028A17C"
+vram = 0x0028A390
+value = 0x00000000
