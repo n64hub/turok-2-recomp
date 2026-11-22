@@ -243,6 +243,7 @@ target_sources(Turok2Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/game/fog.cpp
     ${CMAKE_SOURCE_DIR}/src/game/movement_speed.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/saves.cpp
     ${CMAKE_SOURCE_DIR}/src/game/skips.cpp
     # The engine the Turok games share (lib/turok-engine/README.md).
     ${CMAKE_SOURCE_DIR}/lib/turok-engine/src/audio.cpp
