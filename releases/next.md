@@ -1,0 +1,2 @@
+- **All 16 save slots:** a Turok 2 save takes 90 of a Controller Pak's 123 pages, so the pak held only one: the save screen listed 16 slots, but only the first could be picked. The game's pak now has twelve banks instead of one, room for a save in every slot, and a save made with an earlier version carries over into it.
+- **Graphics:** the newest RT64 fixes from the web support, among them a camera cut no longer drawing rectangles and HUD text halfway between the two shots in the frames between.

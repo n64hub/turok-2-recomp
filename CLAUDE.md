@@ -55,7 +55,8 @@ there, then move this repo's submodule onto the commit.
   (`turok_vm_map_rom_region`), runs its own PI DMA (`turok_pi_raw_start_dma`) and paces its audio thread by
   osAiGetStatus (`turok_ai_get_status`).
 - It wants a Controller Pak in port 1 and asks osMotorInit about a Rumble Pak in each port (`turok_motor_init`):
-  without the first it stops on "Controller Pak not found".
+  without the first it stops on "Controller Pak not found". The pak has 12 banks (`turok::controller_pak_banks<12>`): a
+  save takes 90 pages, so one bank (123) holds one and the save screen's 16 slots need 12 (1520).
 - Widescreen (lib/turok-engine's `docs/widescreen.md`) hooks four places, each with a comment in `us.toml`: the frame
   (func_00287248) starts its display list, whose head is the pointer at 0x800D8E24, and ends it; the HUD's rectangles
   are func_0027C1E8's; the camera (func_0027D160) makes its perspective with guPerspectiveF and keeps its
