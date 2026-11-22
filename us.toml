@@ -420,3 +420,18 @@ text = "    { void turok_retrace(uint8_t*); turok_retrace(rdram); }"
 func = "func_0028A17C"
 vram = 0x0028A390
 value = 0x00000000
+
+# A save to a note of its own while the pak has room (src/game/saves.cpp). Save Game (func_0041FEC4) has looked for a
+# TUROK 2 note on the pak (v0 set when it found one, the pak's port in s1) and branches here to the overwrite prompt
+# for it; the hook clears v0 while the pak has room for another, so the game saves to a new note.
+[[patches.hook]]
+func = "func_0041FEC4"
+before_vram = 0x0042001C
+text = "    { void t2_save_new_note(uint8_t*, recomp_context*); t2_save_new_note(rdram, ctx); }"
+
+# The save screen's free pages in full (src/game/saves.cpp): func_0041FCF4 has copied the first three characters of
+# the count into "free pages :xxx".
+[[patches.hook]]
+func = "func_0041FCF4"
+before_vram = 0x0041FE74
+text = "    { void t2_free_pages_text(uint8_t*, recomp_context*); t2_free_pages_text(rdram, ctx); }"
