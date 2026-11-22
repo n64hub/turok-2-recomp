@@ -97,6 +97,11 @@ Each release is built where the ROM is, by `tools/release.sh` (its header says h
 request titled "Release v<version>" that bumps `version_string` in `src/main/main.cpp` and moves `releases/next.md`,
 where each change adds what the player gets, to `releases/v<version>.md`, the release's notes.
 
+## Thanks
+
+Thanks to [drencoss](https://github.com/drencoss) and [gtxbru](https://github.com/gtxbru) for testing it and
+reporting what they found, from crashes and input lag to the weapon menu, the map and the sound.
+
 ## License
 
 GPL-3.0. The game itself is not included and belongs to its owners.
