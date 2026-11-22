@@ -5,14 +5,14 @@
 // deletes the note (func_00426064) and saves a new one (func_0041F0C8). Only with no TUROK 2 note does Save Game call
 // func_0041F0C8 itself, which checks the pak has room, takes the next note letter the pak's notes leave free
 // (func_00426A94: A, B, ...) and writes the save. On a console a second save meant a second pak, in another
-// controller. The runtime's pak in port 1 is 12 banks (main.cpp), 1408 free pages, room for 15 of the game's 90-page
+// controller. The runtime's pak in port 1 is 12 banks (main.cpp), 1498 free pages, room for 16 of the game's 90-page
 // saves, so t2_save_new_note makes Save Game take the new note's way while the pak has room for one: each save is a
 // note of its own, and only a full pak asks to overwrite one. The load screen lists the pak's notes, and a note chosen
 // there loads that note (func_0041F32C), so each save loads on its own.
 //
 // The save screen's "free pages :xxx - needed :xxx" (the string at 0x800B48B4, func_0041FCF4) is written with "%3d" and
-// only its first three characters copied, so the pak's 1408 showed as 140: t2_free_pages_text writes a count of four
-// digits in full, as "free pages:1408".
+// only its first three characters copied, so the pak's 1498 showed as 149: t2_free_pages_text writes a count of four
+// digits in full, as "free pages:1498".
 
 #include <cstdint>
 
