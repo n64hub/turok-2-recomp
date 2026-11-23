@@ -17,11 +17,20 @@
 // themselves. With it scaled, a wider view drew the weapon smaller and further from the screen's corner (at 150% the
 // bow floated mid-screen, Turok's hand ending at the wrist), and a narrower one larger, mostly off the screen. So after
 // the depth clear a copy of the matrix with the game's own field of view goes into the display list, branched over, and
-// is loaded; once the queue is flushed, the weapon's own loads of the camera's matrix are pointed at the copy, and the
-// camera's own is loaded again for what the view draws after. The camera's matrix is
-// the view, then the perspective, then a scale on the axes, and a perspective's field of view scales only its x and y
-// columns, by the cotangent of half its fovy: the copy is the camera's with those two columns scaled by
-// tan(fovy / 2) / tan(own fovy / 2).
+// is loaded; once the queue is flushed, the weapon's own loads of the camera's matrix are pointed at the copy. The
+// camera's matrix is the view, then the perspective, then a scale on the axes, and a perspective's field of view
+// scales only its x and y columns, by the cotangent of half its fovy: the copy is the camera's with those two columns
+// scaled by tan(fovy / 2) / tan(own fovy / 2).
+//
+// The world draws with a second copy beside it, the camera's matrix as it is: the view's load of the camera's matrix
+// (its one load of it in the frame's list) is pointed at it, and it is loaded again after the weapon. The game writes
+// the camera's matrix again on the frame after, and the renderer reads a display list on its own thread once the game
+// has been told the list is done, so the matrix it read for the world was at times one written after the weapon's
+// copy. The high frame rate's interpolation pairs each frame's scenes with the frame before's by how alike their views
+// are, and with the world's and the weapon's views a frame apart it paired the world with the weapon's view of the
+// frame before: the frames drawn between two of the game's went back two of the game's frames and forward again, a
+// jump up and down while walking and back and forth while turning, a few times a second. With both copies written at
+// the same moment, the list holds one camera for the world and the weapon, whenever it is read.
 //
 // The fovy isn't the eased angle itself: the camera takes the angle's tangent times its own factor (the aspect ratio
 // and the view's size in it) and hands guPerspective the arctangent of that. The factor is the fovy's tangent over the
@@ -60,10 +69,13 @@ namespace {
     std::array<CameraScale, 8> camera_scales{};
     size_t next_camera_slot = 0;
 
-    // While the weapon is drawn: the camera's matrix, and the copy with the game's own field of view and where the
-    // weapon's commands start. 0 when the weapon keeps the camera's matrix.
+    // While the weapon is drawn: the camera's matrix, the copy with the game's own field of view, the matrix the view
+    // draws with after the weapon (the world's copy, or the camera's own where the view's load wasn't found), and where
+    // the weapon's commands start. 0 when the weapon keeps the camera's matrix.
     uint32_t weapon_camera_matrix = 0;
     uint32_t weapon_matrix = 0;
+    uint32_t world_matrix = 0;
+    uint32_t weapon_commands = 0;
 
     constexpr uint32_t kDisplayListHead = 0x800D8E24;
     constexpr uint32_t kFrameParity = 0x800B6D1C;
@@ -71,6 +83,8 @@ namespace {
     constexpr uint32_t kMtxSize = 0x40;
     constexpr uint32_t kLoadProjection = 0xDA380007; // G_MTX: G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH
     constexpr uint32_t kBranch = 0xDE010000;         // G_DL, G_DL_NOPUSH
+    // How far back from the weapon the view's load of the camera's matrix is looked for: it was 0.5-19 KB back.
+    constexpr uint32_t kViewSearch = 0x40000;
 
     double radians(double degrees) {
         return degrees * (3.14159265358979323846 / 180.0);
@@ -110,6 +124,36 @@ namespace {
         }
         camera_scales[next_camera_slot] = { camera, scale };
         next_camera_slot = (next_camera_slot + 1) % camera_scales.size();
+    }
+
+    // The view's load of the camera's matrix: the last load of it before list, the display list's head, or 0 where
+    // there is none within kViewSearch.
+    uint32_t find_view_load(uint8_t* rdram, uint32_t list, uint32_t camera_matrix) {
+        for (uint32_t command = list - 8; command >= list - kViewSearch; command -= 8) {
+            if (read_word(rdram, command) == kLoadProjection && read_word(rdram, command + 4) == camera_matrix) {
+                return command;
+            }
+        }
+        return 0;
+    }
+
+    // A copy of the camera's matrix at mtx, its x and y columns scaled by scale.
+    void write_matrix(uint8_t* rdram, uint32_t mtx, uint32_t camera_matrix, double scale) {
+        int32_t elements[16];
+        for (int n = 0; n < 16; n++) {
+            int32_t value = read_element(rdram, camera_matrix, n);
+            if ((n & 3) < 2) {
+                double scaled = std::round((double)value * scale);
+                value = (int32_t)std::clamp(scaled, (double)INT32_MIN, (double)INT32_MAX);
+            }
+            elements[n] = value;
+        }
+        for (int n = 0; n < 16; n += 2) {
+            uint32_t a = (uint32_t)elements[n];
+            uint32_t b = (uint32_t)elements[n + 1];
+            write_word(rdram, mtx + 4 * (n / 2), (a & 0xFFFF0000) | (b >> 16));
+            write_word(rdram, mtx + 32 + 4 * (n / 2), (a << 16) | (b & 0xFFFF));
+        }
     }
 }
 
@@ -156,8 +200,9 @@ extern "C" void t2_field_of_view_perspective(uint32_t camera, float fovy) {
     set_camera_scale(camera, scale);
 }
 
-// After the weapon's depth clear, in a view of the camera: the copy of the camera's matrix with the game's own field
-// of view, written into the display list and branched over.
+// After the weapon's depth clear, in a view of the camera: the copies of the camera's matrix, the weapon's with the
+// game's own field of view and the world's as it is, written into the display list and branched over, the weapon's
+// loaded, and the view's load of the camera's matrix pointed at the world's.
 extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera) {
     weapon_camera_matrix = 0;
     double scale = camera_scale(camera);
@@ -166,44 +211,40 @@ extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera) {
     }
     uint32_t camera_matrix = camera + kCameraMatrix + (read_word(rdram, kFrameParity) << 6);
     uint32_t list = read_word(rdram, kDisplayListHead);
+    uint32_t view_load = find_view_load(rdram, list, camera_matrix);
     uint32_t mtx = list + 16;
+    uint32_t end = mtx + kMtxSize;
+    write_matrix(rdram, mtx, camera_matrix, scale);
+    world_matrix = camera_matrix;
+    if (view_load != 0) {
+        world_matrix = end;
+        write_matrix(rdram, world_matrix, camera_matrix, 1.0);
+        write_word(rdram, view_load + 4, world_matrix);
+        end += kMtxSize;
+    }
     write_word(rdram, list, kLoadProjection);
     write_word(rdram, list + 4, mtx);
     write_word(rdram, list + 8, kBranch);
-    write_word(rdram, list + 12, mtx + kMtxSize);
-    int32_t elements[16];
-    for (int n = 0; n < 16; n++) {
-        int32_t value = read_element(rdram, camera_matrix, n);
-        if ((n & 3) < 2) {
-            double scaled = std::round((double)value * scale);
-            value = (int32_t)std::clamp(scaled, (double)INT32_MIN, (double)INT32_MAX);
-        }
-        elements[n] = value;
-    }
-    for (int n = 0; n < 16; n += 2) {
-        uint32_t a = (uint32_t)elements[n];
-        uint32_t b = (uint32_t)elements[n + 1];
-        write_word(rdram, mtx + 4 * (n / 2), (a & 0xFFFF0000) | (b >> 16));
-        write_word(rdram, mtx + 32 + 4 * (n / 2), (a << 16) | (b & 0xFFFF));
-    }
-    write_word(rdram, kDisplayListHead, mtx + kMtxSize);
+    write_word(rdram, list + 12, end);
+    write_word(rdram, kDisplayListHead, end);
     weapon_camera_matrix = camera_matrix;
     weapon_matrix = mtx;
+    weapon_commands = end;
 }
 
-// After the weapon is drawn: its loads of the camera's matrix take the copy, and the camera's own is loaded again.
+// After the weapon is drawn: its loads of the camera's matrix take its copy, and the world's is loaded again.
 extern "C" void t2_weapon_view_end(uint8_t* rdram) {
     if (weapon_camera_matrix == 0) {
         return;
     }
     uint32_t list = read_word(rdram, kDisplayListHead);
-    for (uint32_t command = weapon_matrix + kMtxSize; command < list; command += 8) {
+    for (uint32_t command = weapon_commands; command < list; command += 8) {
         if (read_word(rdram, command) == kLoadProjection && read_word(rdram, command + 4) == weapon_camera_matrix) {
             write_word(rdram, command + 4, weapon_matrix);
         }
     }
     write_word(rdram, list, kLoadProjection);
-    write_word(rdram, list + 4, weapon_camera_matrix);
+    write_word(rdram, list + 4, world_matrix);
     write_word(rdram, kDisplayListHead, list + 8);
     weapon_camera_matrix = 0;
 }
