@@ -121,15 +121,17 @@ text = "    { void turok_set_clock_rate(uint8_t*, uint32_t); turok_set_clock_rat
 # Widescreen (lib/turok-engine/src/widescreen.cpp). The game's frame (func_00287248) starts its display list in the
 # buffer it swaps to just before 0x002872BC and is done with it at its return; its HUD (the health counter and what
 # goes with it, as rectangles) is func_0027C1E8's.
+# The Field of View option (src/game/field_of_view.cpp) points the frame's loads of the camera's matrix at its copy,
+# from the list's start to its end, so it marks both too.
 [[patches.hook]]
 func = "func_00287248"
 before_vram = 0x002872BC
-text = "    { void turok_frame_begin(uint8_t*); turok_frame_begin(rdram); }"
+text = "    { void turok_frame_begin(uint8_t*); turok_frame_begin(rdram); void t2_field_of_view_frame_begin(uint8_t*); t2_field_of_view_frame_begin(rdram); }"
 
 [[patches.hook]]
 func = "func_00287248"
 before_vram = 0x00287AB4
-text = "    { void turok_frame_end(uint8_t*); turok_frame_end(rdram); }"
+text = "    { void t2_field_of_view_frame_end(uint8_t*); t2_field_of_view_frame_end(rdram); void turok_frame_end(uint8_t*); turok_frame_end(rdram); }"
 
 [[patches.hook]]
 func = "func_0027C1E8"
