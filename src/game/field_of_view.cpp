@@ -23,23 +23,23 @@
 // scaled by tan(fovy / 2) / tan(own fovy / 2).
 //
 // The world draws with a second copy beside it, the camera's matrix as it is: every load of the camera's matrix in the
-// frame's list, before the weapon and after it, is pointed at it, and it is loaded again after the weapon. The game writes
-// the camera's matrix again on the frame after, and the renderer reads a display list on its own thread once the game
-// has been told the list is done, so the matrix it read for the world was at times one written after the weapon's
+// frame's list, before the weapon and after it, is pointed at it, and it is loaded again after the weapon. The game
+// writes the camera's matrix again on the frame after, and the renderer reads a display list on its own thread once the
+// game has been told the list is done, so the matrix it read for the world was at times one written after the weapon's
 // copy. The high frame rate's interpolation pairs each frame's scenes with the frame before's by how alike their views
 // are, and with the world's and the weapon's views a frame apart it paired the world with the weapon's view of the
-// frame before: the frames drawn between two of the game's went back two of the game's frames and forward again, a
-// jump up and down while walking and back and forth while turning, a few times a second. With both copies written at
-// the same moment, the list holds one camera for the world and the weapon, whenever it is read.
+// frame before: the frames drawn between two of the game's went back two of the game's frames and forward again, a jump
+// up and down while walking and back and forth while turning, a few times a second. With both copies written at the
+// same moment, the list holds one camera for the world and the weapon, whenever it is read.
 //
 // The view loads the camera's matrix more than once: an object drawn with a projection of its own (func_0021ED04, for
-// an object whose +0x98 is set: in a town of level 0x37 one is drawn on every frame) loads its projection,
-// draws, and loads the camera's matrix again, and what comes after the weapon can load it too. Pointing only the last
-// load before the weapon at the copy (v0.2.27) left the world before that object's load with the camera's matrix, read
-// at times a frame late, and the rest with the copy: while moving, the parts of the level drawn before it were drawn
-// a frame's turn or step off to the side of the rest. So the frame's list is searched from its start (where the game
-// begins it, t2_field_of_view_frame_begin) to the weapon, and once the frame is done (t2_field_of_view_frame_end) from
-// the weapon to its end.
+// an object whose +0x98 is set: in a town of level 0x37 one is drawn on every frame) loads its projection, draws, and
+// loads the camera's matrix again, and what comes after the weapon can load it too. Pointing only the last load before
+// the weapon at the copy (v0.2.27) left the world before that object's load with the camera's matrix, read at times a
+// frame late, and the rest with the copy: while moving, the parts of the level drawn before it were drawn a frame's
+// turn or step off to the side of the rest. So the frame's list is searched from its start (where the game begins it,
+// t2_field_of_view_frame_begin) to the weapon, and once the frame is done (t2_field_of_view_frame_end) from the weapon
+// to its end.
 //
 // The fovy isn't the eased angle itself: the camera takes the angle's tangent times its own factor (the aspect ratio
 // and the view's size in it) and hands guPerspective the arctangent of that. The factor is the fovy's tangent over the
