@@ -1,1 +1,2 @@
 - **Rumble works:** the controller vibrates where the game drives its Rumble Pak. The game looked for a Rumble Pak in the slot that holds your Controller Pak, always found the Controller Pak, and so never started the motor. Your saves stay where they were.
+- **Riding at a wider Field of View:** the armoured animal you ride now widens with the world. Above 100%, its spiked back and its guns stayed the size they are at 100% while the world around them widened, so the back filled the bottom of the screen and the guns looked very large and close.
