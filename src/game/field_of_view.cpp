@@ -41,6 +41,12 @@
 // t2_field_of_view_frame_begin) to the weapon, and once the frame is done (t2_field_of_view_frame_end) from the weapon
 // to its end.
 //
+// The armoured animal Turok rides isn't in his hands, and widens with the world. Riding, the player's weapon (+0x996 of
+// its struct) is the mount's, 0x13: its spiked back across the bottom of the view and a gun at each side, drawn by
+// func_00249898 as any weapon is. With the game's own field of view they stayed the size they are at 100% while the
+// world around them widened, so the back filled the bottom of the screen and the guns loomed large and close at the
+// sides. The mount draws with the camera's matrix, as the world does.
+//
 // The fovy isn't the eased angle itself: the camera takes the angle's tangent times its own factor (the aspect ratio
 // and the view's size in it) and hands guPerspective the arctangent of that. The factor is the fovy's tangent over the
 // scaled angle's, so the game's own fovy is the arctangent of the game's own angle's tangent times it.
@@ -62,6 +68,9 @@ namespace {
     std::atomic<float> field_of_view{ 1.0f };
 
     constexpr float kMaxAngle = 85.0f;
+
+    // The player's weapon while riding the armoured animal: the mount's back and guns.
+    constexpr int32_t kMountWeapon = 0x13;
 
     // The camera's eased angle this call, the game's own and scaled, from t2_field_of_view to
     // t2_field_of_view_perspective, which take turns on the game's thread. A cinematic's call never sets it.
@@ -190,7 +199,8 @@ void t2::add_field_of_view_option(recomp::config::Config& graphics) {
         "Field of View",
         "How much of the world the view takes in: 100% is the game's own, more shows more at the sides and above and "
         "below, less zooms in. The game sets its own view per area of a level, and this scales whatever that is. "
-        "Cinematics keep the game's own view, and the weapon in Turok's hands its own look.",
+        "Cinematics keep the game's own view, and the weapon in Turok's hands its own look; an animal he rides widens "
+        "with the world.",
         70, 150, 5, 0, true, 100);
     // Called on load too, with the saved value, and at each change.
     graphics.add_option_change_callback(field_of_view_option,
@@ -227,13 +237,14 @@ extern "C" void t2_field_of_view_perspective(uint32_t camera, float fovy) {
     set_camera_scale(camera, scale);
 }
 
-// After the weapon's depth clear, in a view of the camera: the copies of the camera's matrix, the weapon's with the
-// game's own field of view and the world's as it is, written into the display list and branched over, the weapon's
-// loaded, and the view's load of the camera's matrix pointed at the world's.
-extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera) {
+// After the weapon's depth clear, in a view of the camera with the player's weapon: the copies of the camera's matrix,
+// the weapon's with the game's own field of view and the world's as it is, written into the display list and branched
+// over, the weapon's loaded, and the view's load of the camera's matrix pointed at the world's. The mount keeps the
+// camera's matrix.
+extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera, int32_t weapon) {
     weapon_camera_matrix = 0;
     double scale = camera_scale(camera);
-    if (scale == 1.0) {
+    if (scale == 1.0 || weapon == kMountWeapon) {
         return;
     }
     uint32_t camera_matrix = camera + kCameraMatrix + (read_word(rdram, kFrameParity) << 6);
