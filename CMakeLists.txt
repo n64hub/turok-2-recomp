@@ -90,6 +90,10 @@ set(RT64_SKIP_COLLAPSED_MATCHES ON)
 # The line microcodes' lines (G_LINE3D), which RT64 leaves out, drawn as quads along them on the screen: Turok 1's map
 # (L3DEX 1.00, through lib/turok-engine's rt64-4 patch), and L3DEX2's in Turok 2 and 3.
 set(RT64_DRAW_LINES ON)
+# Turok 2 draws with no matrix group, so RT64 lerps a view's rotation a component at a time in the frames between the
+# game's, which shifts the picture there as the camera turns while it looks up or down and lets go of it at each game
+# frame: a judder at the game's rate. RT64_SLERP_CAMERA_ROTATION turns the view between the two at a constant rate.
+set(RT64_SLERP_CAMERA_ROTATION ON)
 add_compile_definitions(HLSL_CPU)
 
 if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")

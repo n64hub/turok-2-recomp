@@ -1,0 +1,1 @@
+- **No judder when you turn while looking up:** turning while looking up or down no longer shakes the picture. Between the game's own frames, the camera's turn was blended in a way that pulled the picture slightly off and let it snap back every game frame. The faster the turn, the bigger the snap. Now the camera turns smoothly between frames.
