@@ -1,1 +1,1 @@
-- **Rumble works:** the controller now rumbles when you fire and take hits. The game looked for a Rumble Pak and always found the Controller Pak that keeps your saves in the same slot, so it never rumbled. Your saves are where they were.
+- **Rumble works:** the controller vibrates where the game drives its Rumble Pak. The game looked for a Rumble Pak in the slot that holds your Controller Pak, always found the Controller Pak, and so never started the motor. Your saves stay where they were.
