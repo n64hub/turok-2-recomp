@@ -1,1 +1,0 @@
-- **Riding at a wider Field of View:** the armoured animal you ride now widens with the world. Above 100%, its spiked back and its guns stayed the size they are at 100% while the world around them widened, so the back filled the bottom of the screen and the guns looked very large and close.
