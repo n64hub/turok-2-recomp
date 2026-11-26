@@ -59,6 +59,10 @@ there, then move this repo's submodule onto the commit.
   asks to overwrite it; `src/game/saves.cpp` makes Save Game save to a new note (B, C, ...) while the pak has room. A
   save takes 90 pages, so the pak has 12 banks (`turok::controller_pak_banks<12>`, 1498 pages): 15 saves and the
   multiplayer note fill its 16 notes.
+- Its rumble code (func_00285304 and three like it probe, func_002851C0 drives the motor each frame) asks osMotorInit
+  with an OSPfs in each controller's struct (0x800F5EC0 + 0x224 per port, the OSPfs at +0xD8, the Rumble Pak's flag at
+  +0xC8) and the save screens with their own (0x80130AA8 + 0x70 per port): `turok::set_rumble_pfs` in `on_init` gives
+  the first a Rumble Pak in port 1, so the controller rumbles, and the second still finds the Controller Pak.
 - Widescreen (lib/turok-engine's `docs/widescreen.md`) hooks four places, each with a comment in `us.toml`: the frame
   (func_00287248) starts its display list, whose head is the pointer at 0x800D8E24, and ends it; the HUD's rectangles
   are func_0027C1E8's; the camera (func_0027D160) makes its perspective with guPerspectiveF and keeps its
