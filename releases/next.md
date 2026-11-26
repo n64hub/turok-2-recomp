@@ -1,0 +1,1 @@
+- **Rumble works:** the controller now rumbles when you fire and take hits. The game looked for a Rumble Pak and always found the Controller Pak that keeps your saves in the same slot, so it never rumbled. Your saves are where they were.
