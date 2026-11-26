@@ -338,11 +338,12 @@ text = "    { void t2_field_of_view_perspective(uint32_t, float); t2_field_of_vi
 # The weapon (func_00249898, the player in s1, the view's camera in s2) clears the depth buffer (func_0028852C), queues
 # its models (func_0021D39C) and draws them as the queue is flushed (func_0020B624): its view's matrix with the game's
 # own field of view is loaded after the clear, and after the flush the weapon's own loads of the camera's matrix take
-# it too and the camera's own is loaded again.
+# it too and the camera's own is loaded again. The player's weapon (+0x996) goes with it: the mount's draws as the
+# world does.
 [[patches.hook]]
 func = "func_00249898"
 before_vram = 0x0024999C
-text = "    { void t2_weapon_view_begin(uint8_t*, uint32_t); t2_weapon_view_begin(rdram, (uint32_t)ctx->r18); }"
+text = "    { void t2_weapon_view_begin(uint8_t*, uint32_t, int32_t); t2_weapon_view_begin(rdram, (uint32_t)ctx->r18, (int32_t)MEM_H(0x996, ctx->r17)); }"
 
 [[patches.hook]]
 func = "func_00249898"
