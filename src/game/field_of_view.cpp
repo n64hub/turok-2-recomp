@@ -23,14 +23,19 @@
 // scaled by tan(fovy / 2) / tan(own fovy / 2).
 //
 // The world draws with a second copy beside it, the camera's matrix as it is: every load of the camera's matrix in the
-// frame's list, before the weapon and after it, is pointed at it, and it is loaded again after the weapon. The game
-// writes the camera's matrix again on the frame after, and the renderer reads a display list on its own thread once the
-// game has been told the list is done, so the matrix it read for the world was at times one written after the weapon's
-// copy. The high frame rate's interpolation pairs each frame's scenes with the frame before's by how alike their views
-// are, and with the world's and the weapon's views a frame apart it paired the world with the weapon's view of the
-// frame before: the frames drawn between two of the game's went back two of the game's frames and forward again, a jump
-// up and down while walking and back and forth while turning, a few times a second. With both copies written at the
-// same moment, the list holds one camera for the world and the weapon, whenever it is read.
+// frame's list, before the weapon and after it, is pointed at it, and it is loaded again after the weapon. With the
+// weapon's copy alone (v0.2.26) the world and the weapon were drawn with cameras a frame apart, and the high frame
+// rate's interpolation, which pairs each frame's scenes with the frame before's by how alike their views are, paired
+// the world with the weapon's view of the frame before: the frames drawn between two of the game's went back two of the
+// game's frames and forward again, a jump up and down while walking and back and forth while turning, a few times a
+// second. With both copies, the list holds one camera for the world and the weapon.
+//
+// The copies go into the list at the weapon, but they are filled just before the frame's task is sent
+// (t2_field_of_view_frame_send). The game writes the frame's camera's matrix after the weapon is drawn and before the
+// task goes, so at the weapon the camera's slot still holds the matrix written into it two frames before. Copies filled
+// there (v0.2.27 to v0.2.30) drew the world and the weapon with the camera of two of the game's frames before, about
+// 67 ms late, at any Field of View but 100%, which makes no copies: turning, the view trailed the stick as if it had
+// inertia. Filled at the send, they hold the frame's own camera.
 //
 // The view loads the camera's matrix more than once: an object drawn with a projection of its own (func_0021ED04, for
 // an object whose +0x98 is set: in a town of level 0x37 one is drawn on every frame) loads its projection, draws, and
@@ -38,7 +43,7 @@
 // the weapon at the copy (v0.2.27) left the world before that object's load with the camera's matrix, read at times a
 // frame late, and the rest with the copy: while moving, the parts of the level drawn before it were drawn a frame's
 // turn or step off to the side of the rest. So the frame's list is searched from its start (where the game begins it,
-// t2_field_of_view_frame_begin) to the weapon, and once the frame is done (t2_field_of_view_frame_end) from the weapon
+// t2_field_of_view_frame_begin) to the weapon, and once the frame's list is done, as its task is sent, from the weapon
 // to its end.
 //
 // The armoured animal Turok rides isn't in his hands, and widens with the world. Riding, the player's weapon (+0x996 of
@@ -87,24 +92,29 @@ namespace {
     std::array<CameraScale, 8> camera_scales{};
     size_t next_camera_slot = 0;
 
-    // While the weapon is drawn: the camera's matrix, the copy with the game's own field of view, the matrix the view
-    // draws with after the weapon (the world's copy, or the camera's own where the view's load wasn't found), and where
-    // the weapon's commands start. 0 when the weapon keeps the camera's matrix.
+    // While the weapon is drawn: the camera's matrix, the copy with the game's own field of view and its scale, the
+    // matrix the view draws with after the weapon (the world's copy, or the camera's own where the view's load wasn't
+    // found), and where the weapon's commands start. 0 when the weapon keeps the camera's matrix.
     uint32_t weapon_camera_matrix = 0;
+    double weapon_scale = 1.0;
     uint32_t weapon_matrix = 0;
     uint32_t world_matrix = 0;
     uint32_t weapon_commands = 0;
 
-    // The frame's list from where the game begins it, 0 outside a frame, and the views whose weapon was drawn in it:
-    // each one's camera's matrix, the world's copy of it, and where the list goes on after the weapon.
+    // The frame's list from where the game begins it, 0 outside a frame, and the views whose weapon was drawn in it with
+    // its copy: each one's camera's matrix, the weapon's copy and its scale, the matrix the view draws with after the
+    // weapon, and where the list goes on after the weapon. Whether the copies have been filled for the frame's send.
     uint32_t frame_start = 0;
     struct FrameView {
         uint32_t camera_matrix;
+        uint32_t weapon_matrix;
+        double scale;
         uint32_t world_matrix;
         uint32_t after;
     };
     std::array<FrameView, 4> frame_views{};
     size_t frame_view_count = 0;
+    bool frame_sent = false;
 
     constexpr uint32_t kDisplayListHead = 0x800D8E24;
     constexpr uint32_t kFrameParity = 0x800B6D1C;
@@ -239,8 +249,9 @@ extern "C" void t2_field_of_view_perspective(uint32_t camera, float fovy) {
 
 // After the weapon's depth clear, in a view of the camera with the player's weapon: the copies of the camera's matrix,
 // the weapon's with the game's own field of view and the world's as it is, written into the display list and branched
-// over, the weapon's loaded, and the view's load of the camera's matrix pointed at the world's. The mount keeps the
-// camera's matrix.
+// over, the weapon's loaded, and the view's load of the camera's matrix pointed at the world's. What they are filled with
+// here, the slot's matrix of two frames before, is replaced at the send with the frame's. The mount keeps the camera's
+// matrix.
 extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera, int32_t weapon) {
     weapon_camera_matrix = 0;
     double scale = camera_scale(camera);
@@ -264,6 +275,7 @@ extern "C" void t2_weapon_view_begin(uint8_t* rdram, uint32_t camera, int32_t we
     write_word(rdram, list + 12, end);
     write_word(rdram, kDisplayListHead, end);
     weapon_camera_matrix = camera_matrix;
+    weapon_scale = scale;
     weapon_matrix = mtx;
     weapon_commands = end;
 }
@@ -282,8 +294,8 @@ extern "C" void t2_weapon_view_end(uint8_t* rdram) {
     write_word(rdram, list, kLoadProjection);
     write_word(rdram, list + 4, world_matrix);
     write_word(rdram, kDisplayListHead, list + 8);
-    if (world_matrix != weapon_camera_matrix && frame_view_count < frame_views.size()) {
-        frame_views[frame_view_count++] = { weapon_camera_matrix, world_matrix, list + 8 };
+    if (frame_view_count < frame_views.size()) {
+        frame_views[frame_view_count++] = { weapon_camera_matrix, weapon_matrix, weapon_scale, world_matrix, list + 8 };
     }
     weapon_camera_matrix = 0;
 }
@@ -292,18 +304,33 @@ extern "C" void t2_weapon_view_end(uint8_t* rdram) {
 extern "C" void t2_field_of_view_frame_begin(uint8_t* rdram) {
     frame_start = read_word(rdram, kDisplayListHead);
     frame_view_count = 0;
+    frame_sent = false;
 }
 
-// The frame's list done: what each view drew after its weapon loads the world's copy of the camera's matrix too. With
-// the head in another list (the map's), where the frame's ends isn't known, and the loads after the weapon are left.
-extern "C" void t2_field_of_view_frame_end(uint8_t* rdram) {
+// Just before the frame's (first) task is sent, its list done: each view's copies are filled from the camera's matrix
+// the game wrote for the frame, and what the view drew after its weapon loads the world's copy too. With the head in
+// another list (the map's), where the frame's ends isn't known, the loads after the weapon are left.
+extern "C" void t2_field_of_view_frame_send(uint8_t* rdram) {
+    if (frame_sent) {
+        return;
+    }
+    frame_sent = true;
     uint32_t head = read_word(rdram, kDisplayListHead);
-    if (in_frame(head)) {
-        for (size_t i = 0; i < frame_view_count; i++) {
-            const FrameView& view = frame_views[i];
-            redirect_loads(rdram, view.after, head, view.camera_matrix, view.world_matrix);
+    for (size_t i = 0; i < frame_view_count; i++) {
+        const FrameView& view = frame_views[i];
+        write_matrix(rdram, view.weapon_matrix, view.camera_matrix, view.scale);
+        if (view.world_matrix != view.camera_matrix) {
+            write_matrix(rdram, view.world_matrix, view.camera_matrix, 1.0);
+            if (in_frame(head)) {
+                redirect_loads(rdram, view.after, head, view.camera_matrix, view.world_matrix);
+            }
         }
     }
+}
+
+// The frame done: one whose task wasn't sent has its copies filled here.
+extern "C" void t2_field_of_view_frame_end(uint8_t* rdram) {
+    t2_field_of_view_frame_send(rdram);
     frame_view_count = 0;
     frame_start = 0;
 }
